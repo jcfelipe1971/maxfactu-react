@@ -42,8 +42,8 @@ export function EntornoConfig() {
   };
 
   // ✅ Etiqueta de empresa seleccionada
-  const empresaLabel = entorno.empresa 
-    ? empresas.find(e => e.value === entorno.empresa || e.value?.toString() === entorno.empresa?.toString())?.label 
+  const empresaLabel = entorno.empresa
+    ? empresas.find(e => e.value === entorno.empresa || e.value?.toString() === entorno.empresa?.toString())?.label
     : null;
 
   return (
@@ -86,7 +86,7 @@ export function EntornoConfig() {
       {/* Panel expandido */}
       {expanded && (
         <div className="p-4 space-y-4 border-t border-slate-700">
-          
+
           {/* 🏢 Empresa */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -96,19 +96,18 @@ export function EntornoConfig() {
               value={entorno.empresa?.toString() || ''}
               onChange={(e) => {
                 const valor = e.target.value ? Number(e.target.value) : null;
-                console.log('🔄 Empresa seleccionada:', valor); // Debug
-                setEntorno(prev => ({
-                  ...prev,
+                console.log('🔄 Empresa seleccionada:', valor);
+                // ❌ INCORRECTO: setEntorno(prev => ({ ...prev, empresa: valor, ... }));
+                // ✅ CORRECTO:
+                setEntorno({
                   empresa: valor,
                   ejercicio: null,
                   canal: null,
                   serie: ''
-                }));
+                });
               }}
               disabled={loadingEmpresas}
-              className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
-                focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
-                disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">
                 {loadingEmpresas ? 'Cargando empresas...' : 'Seleccione empresa'}
@@ -130,17 +129,15 @@ export function EntornoConfig() {
               value={entorno.ejercicio?.toString() || ''}
               onChange={(e) => {
                 const valor = e.target.value ? Number(e.target.value) : null;
-                setEntorno(prev => ({
-                  ...prev,
+                // ✅ Pasamos el objeto directamente
+                setEntorno({
                   ejercicio: valor,
                   canal: null,
                   serie: ''
-                }));
+                });
               }}
               disabled={!entorno.empresa || loadingEjercicios}
-              className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
-                focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
-                disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">
                 {!entorno.empresa ? 'Seleccione empresa primero' :
@@ -163,16 +160,14 @@ export function EntornoConfig() {
               value={entorno.canal?.toString() || ''}
               onChange={(e) => {
                 const valor = e.target.value ? Number(e.target.value) : null;
-                setEntorno(prev => ({
-                  ...prev,
+                // ✅ Pasamos el objeto directamente
+                setEntorno({
                   canal: valor,
                   serie: ''
-                }));
+                });
               }}
               disabled={!entorno.ejercicio || loadingCanales}
-              className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
-                focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
-                disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">
                 {!entorno.ejercicio ? 'Seleccione ejercicio primero' :
@@ -193,7 +188,7 @@ export function EntornoConfig() {
             </label>
             <select
               value={entorno.serie || ''}
-              onChange={(e) => setEntorno(prev => ({ ...prev, serie: e.target.value }))}
+              onChange={(e) => setEntorno({ serie: e.target.value })}
               disabled={!entorno.canal || loadingSeries}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
@@ -216,7 +211,7 @@ export function EntornoConfig() {
             <input
               type="date"
               value={entorno.fechaTrab || ''}
-              onChange={(e) => setEntorno(prev => ({ ...prev, fechaTrab: e.target.value }))}
+              onChange={(e) => setEntorno({ fechaTrab: e.target.value })}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
