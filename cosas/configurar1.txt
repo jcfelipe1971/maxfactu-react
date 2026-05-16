@@ -1,0 +1,17 @@
+Arquitectura Full-Stack:
+Backend (Express): Servidor configurado con rutas REST API (/api/familias, /api/tipos-iva) para gestionar los datos.
+Frontend (React): Interfaz moderna y responsiva con animaciones suaves (framer-motion).
+Pantalla de Familias (La solicitada):
+Vista de Tabla: Un listado profesional con filtrado y selección, similar al grid de Delphi pero mejorado con el estilo "Professional Polish" (tema claro, colores slate y acentos azules).
+Vista de Ficha (Detalle): Formulario para editar la descripción de la familia, el tipo de IVA y la opción de "Permite stock negativo".
+Barra de Herramientas ERP: Botones de navegación (primero, anterior, siguiente, último), añadir, eliminar, guardar y refrescar, manteniendo la lógica de una aplicación de gestión.
+Diseño "Professional Polish":
+Se ha aplicado una paleta de colores ligera y profesional (Slate/White) con tipografía Inter para la interfaz y JetBrains Mono para códigos y datos técnicos.
+Sidebar lateral organizado por módulos (Almacenes, Terceros, Ventas, Compras, VeriFactu) con estados activos claros.
+Conexión Real:
+La aplicación ya no usa datos estáticos en el cliente; consume la API del servidor, lo que te permite integrar fácilmente tu base de datos real (Firebird o SQL Server) en el archivo server.ts.
+Cómo continuar:
+Puedes encontrar la lógica de la API en el archivo /server.ts.
+Para añadir nuevas pantallas, puedes crear componentes similares a FamiliasView.tsx y registrarlos en el menú de Sidebar.tsx.
+La interfaz está optimizada para ser escalable y mantener esa sensación de herramienta profesional de escritorio en un entorno web moderno.
+¿Te gustaría que implementara alguna otra pantalla específica o añadiera alguna funcionalidad adicional a la ficha de Familias?

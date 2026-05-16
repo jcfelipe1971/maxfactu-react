@@ -1,0 +1,40 @@
+Para que el proyecto MaxFactu React funcione localmente en tu PC (en la carpeta D:\maxfactu-react), sigue estos pasos detallados:
+1. Requisitos de Software
+Antes de empezar, asegúrate de tener instalado:
+Node.js: Descarga la versión LTS (recomendada) desde nodejs.org. Esto instalará automáticamente npm.
+Editor de Código: Te recomiendo Visual Studio Code (es el estándar para este tipo de proyectos).
+2. Preparación del Proyecto
+Abre una terminal (PowerShell o CMD) y navega a tu carpeta:
+code
+Bash
+d:
+cd \maxfactu-react
+3. Instalación de Dependencias
+Ejecuta el siguiente comando para descargar e instalar todas las librerías necesarias (React, Express, Tailwind, etc.):
+code
+Bash
+npm install
+4. Configuración del Entorno
+Verás un archivo llamado .env.example. Debes crear una copia y renombrarla a solo .env:
+code
+Bash
+copy .env.example .env
+(Si vas a usar funciones de Inteligencia Artificial más adelante, deberás poner tu clave de Gemini en ese archivo).
+5. Cómo ejecutar el proyecto
+Para el desarrollo, utiliza este comando:
+code
+Bash
+npm run dev
+¿Qué pasará ahora?
+Se iniciará el servidor Express (el backend) que configuramos en server.ts.
+Se activará el entorno de Vite para el frontend.
+Podrás ver tu aplicación abriendo tu navegador en: http://localhost:3000
+Detalles Técnicos de la Estructura:
+Frontend: Está en la carpeta src/. He usado React 19, Tailwind CSS para el diseño profesional y Framer Motion para las animaciones.
+Backend (API): Está en server.ts. Actualmente tiene una "Mock API" (base de datos de ejemplo en memoria) para las Familias y los Tipos de IVA.
+Conexión real: Para conectarlo a tu base de datos real de Firebird/Delphi, necesitarás instalar un driver de base de datos en Node.js (como node-firebird) y modificar las rutas en server.ts.
+Resumen de comandos para uso diario:
+npm run dev: Para trabajar y ver los cambios en tiempo real.
+npm run build: Para generar la versión final lista para producción (se crea en la carpeta dist/).
+npm start: Para ejecutar la versión ya compilada.
+¡Espero que esto te ayude a dar el salto de Delphi a la web! Si necesitas ayuda conectando la base de datos real, dímelo.
