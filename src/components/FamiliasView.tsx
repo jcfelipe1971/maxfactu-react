@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronsLeft, 
-  ChevronsRight, 
-  Plus, 
-  Trash2, 
-  Save, 
-  X, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Plus,
+  Trash2,
+  Save,
+  X,
   RefreshCw,
   Search,
-  ShieldCheck 
+  ShieldCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Familia, TipoIva } from "@/src/types";
@@ -51,7 +51,7 @@ export function FamiliasView() {
 
   const handleUpdate = async (field: keyof Familia, value: any) => {
     if (!selectedFamilia) return;
-    
+
     const updated = { ...selectedFamilia, [field]: value };
     try {
       await axios.put(`/api/familias/${selectedFamilia.id}`, updated);
@@ -80,7 +80,7 @@ export function FamiliasView() {
           <ToolbarButton icon={<Save size={16} />} className="text-blue-600 hover:bg-blue-50" label="GUARDAR" />
           <ToolbarButton icon={<RefreshCw size={16} />} className="text-slate-600 hover:bg-slate-100" onClick={fetchData} />
         </div>
-        
+
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Filtrar:</span>
           <select className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-semibold outline-none focus:border-blue-500 transition-colors">
@@ -93,15 +93,15 @@ export function FamiliasView() {
 
       {/* Tabs */}
       <div className="flex px-6 border-b border-slate-200 bg-white shadow-sm z-0">
-        <TabButton 
-          active={activeTab === "tabla"} 
+        <TabButton
+          active={activeTab === "tabla"}
           onClick={() => setActiveTab("tabla")}
-          label="Vista de Tabla" 
+          label="Vista de Tabla"
         />
-        <TabButton 
-          active={activeTab === "ficha"} 
+        <TabButton
+          active={activeTab === "ficha"}
           onClick={() => setActiveTab("ficha")}
-          label="Ficha de Familia" 
+          label="Ficha de Familia"
         />
       </div>
 
@@ -127,30 +127,77 @@ export function FamiliasView() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {familias.map((f, idx) => (
-                    <tr 
+                    <tr
                       key={f.id}
-                      onClick={() => { setSelectedIndex(idx); setActiveTab("ficha"); }}
                       className={cn(
-                        "hover:bg-blue-50 cursor-pointer transition-colors duration-150",
+                        "hover:bg-blue-50 transition-colors duration-150",
                         selectedIndex === idx && "bg-blue-50/70"
                       )}
                     >
                       <td className="p-4 font-mono text-xs text-slate-500">{f.id}</td>
-                      <td className="p-4 font-semibold text-slate-700">{f.titulo}</td>
-                      <td className="p-4 text-center">
-                        <span className="px-2 py-1 bg-slate-100 rounded border border-slate-200 text-xs font-medium text-slate-600">
-                          {tiposIva.find(t => t.id === f.tipoIva)?.titulo || f.tipoIva}
-                        </span>
+
+                      {/* TITULO - EDITABLE */}
+                      <td
+                        onClick={() => !selectedIndex || setSelectedIndex(idx)}
+                        className="p-4 cursor-pointer hover:bg-blue-50/50 rounded font-semibold text-slate-700"
+                      >
+                        <input
+                          type="text"
+                          value={f.titulo}
+                          onChange={(e) => {
+                            const newFamilias = [...familias];
+                            newFamilias[idx].titulo = e.target.value;
+                            setFamilias(newFamilias);
+                          }}
+                          onBlur={(e) => handleUpdate('titulo', e.target.value)}
+                          className="w-full bg-transparent border-0 outline-none font-semibold focus:bg-white focus:border border-blue-500 p-1 rounded"
+                          onClick={(e) => e.stopPropagation()}
+                        />
                       </td>
+
+                      {/* TIPO IVA - EDITABLE */}
+                      <td className="p-4 text-center">
+                        <select
+                          value={f.tipoIva}
+                          onChange={(e) => {
+                            const newFamilias = [...familias];
+                            newFamilias[idx].tipoIva = parseInt(e.target.value);
+                            setFamilias(newFamilias);
+                          }}
+                          onBlur={(e) => handleUpdate('tipoIva', parseInt(e.target.value))}
+                          className="px-2 py-1 bg-slate-100 rounded border border-slate-200 text-xs font-medium text-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {tiposIva.map(t => (
+                            <option key={t.id} value={t.id}>{t.titulo}</option>
+                          ))}
+                        </select>
+                      </td>
+
+                      {/* PERMITE NEGATIVO - EDITABLE */}
                       <td className="p-4 text-right">
-                        <span className={cn(
-                          "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
-                          f.permiteStockNegativo 
-                            ? "bg-green-100 text-green-700" 
-                            : "bg-red-100 text-red-700"
-                        )}>
-                          {f.permiteStockNegativo ? "SÍ" : "NO"}
-                        </span>
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={f.permiteStockNegativo}
+                            onChange={(e) => {
+                              const newFamilias = [...familias];
+                              newFamilias[idx].permiteStockNegativo = e.target.checked;
+                              setFamilias(newFamilias);
+                              handleUpdate('permiteStockNegativo', e.target.checked);
+                            }}
+                            className="rounded accent-green-600"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <span className={cn(
+                            "ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
+                            f.permiteStockNegativo
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          )}>
+                            {f.permiteStockNegativo ? "SÍ" : "NO"}
+                          </span>
+                        </label>
                       </td>
                     </tr>
                   ))}
@@ -169,22 +216,22 @@ export function FamiliasView() {
                 <>
                   <div className="lg:col-span-2 space-y-6 bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
                     <div className="pb-4 border-b border-slate-100 mb-2">
-                       <h3 className="text-xl font-bold text-slate-800">Detalles de la Familia</h3>
-                       <p className="text-sm text-slate-400">Información administrativa y lógica de negocio</p>
+                      <h3 className="text-xl font-bold text-slate-800">Detalles de la Familia</h3>
+                      <p className="text-sm text-slate-400">Información administrativa y lógica de negocio</p>
                     </div>
 
                     <FormField label="Identificación y Nombre">
                       <div className="flex gap-4">
                         <div className="w-24">
-                           <input 
-                            type="text" 
+                          <input
+                            type="text"
                             readOnly
                             value={selectedFamilia.id}
                             className="w-full bg-slate-50 border border-slate-200 p-2 rounded text-slate-500 font-mono text-center"
                           />
                         </div>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={selectedFamilia.titulo}
                           onChange={(e) => handleUpdate('titulo', e.target.value)}
                           className="flex-1 bg-white border border-slate-200 p-2 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none shadow-sm transition-all"
@@ -195,14 +242,14 @@ export function FamiliasView() {
                     <FormField label="Tipo de IVA Aplicable">
                       <div className="flex gap-4 items-center">
                         <div className="w-24">
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             readOnly
                             value={selectedFamilia.tipoIva}
                             className="w-full bg-slate-50 border border-slate-200 p-2 rounded text-center text-blue-700 font-bold"
                           />
                         </div>
-                        <select 
+                        <select
                           value={selectedFamilia.tipoIva}
                           onChange={(e) => handleUpdate('tipoIva', parseInt(e.target.value))}
                           className="flex-1 bg-white border border-slate-200 p-2 rounded outline-none shadow-sm focus:border-blue-500 transition-all font-medium"
@@ -220,20 +267,20 @@ export function FamiliasView() {
                           "w-12 h-6 rounded-full relative transition-colors duration-300",
                           selectedFamilia.permiteStockNegativo ? "bg-blue-600" : "bg-slate-300"
                         )}>
-                           <div className={cn(
-                             "absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm",
-                             selectedFamilia.permiteStockNegativo ? "left-7" : "left-1"
-                           )} />
+                          <div className={cn(
+                            "absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm",
+                            selectedFamilia.permiteStockNegativo ? "left-7" : "left-1"
+                          )} />
                         </div>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           className="hidden"
                           checked={selectedFamilia.permiteStockNegativo}
                           onChange={() => handleUpdate('permiteStockNegativo', !selectedFamilia.permiteStockNegativo)}
                         />
                         <div className="flex flex-col">
-                           <span className="text-sm font-bold text-slate-700">Permitir Stock Negativo</span>
-                           <span className="text-xs text-slate-400">Si se activa, el sistema permitirá ventas sin existencias físicas verificadas</span>
+                          <span className="text-sm font-bold text-slate-700">Permitir Stock Negativo</span>
+                          <span className="text-xs text-slate-400">Si se activa, el sistema permitirá ventas sin existencias físicas verificadas</span>
                         </div>
                       </label>
                     </div>
@@ -242,8 +289,8 @@ export function FamiliasView() {
                   <div className="flex flex-col gap-6">
                     <div className="flex flex-col items-center justify-center p-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                       <div className="relative w-full aspect-square bg-slate-100 rounded-lg overflow-hidden group">
-                        <img 
-                          src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=600" 
+                        <img
+                          src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=600"
                           alt="Product"
                           className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500"
                         />
@@ -255,13 +302,13 @@ export function FamiliasView() {
                     </div>
 
                     <div className="bg-blue-700 rounded-xl p-6 text-white shadow-lg overflow-hidden relative group">
-                       <div className="relative z-10">
-                          <h4 className="font-bold text-lg mb-1">Módulo Fiscal</h4>
-                          <p className="text-white/70 text-xs leading-relaxed">
-                            Las configuraciones de esta ficha afectan directamente al cálculo de impuestos en facturación mensual.
-                          </p>
-                       </div>
-                       <ShieldCheck className="absolute -bottom-2 -right-2 w-24 h-24 text-white/10 group-hover:rotate-12 transition-transform duration-500" />
+                      <div className="relative z-10">
+                        <h4 className="font-bold text-lg mb-1">Módulo Fiscal</h4>
+                        <p className="text-white/70 text-xs leading-relaxed">
+                          Las configuraciones de esta ficha afectan directamente al cálculo de impuestos en facturación mensual.
+                        </p>
+                      </div>
+                      <ShieldCheck className="absolute -bottom-2 -right-2 w-24 h-24 text-white/10 group-hover:rotate-12 transition-transform duration-500" />
                     </div>
                   </div>
                 </>
@@ -292,7 +339,7 @@ export function FamiliasView() {
 
 function ToolbarButton({ icon, onClick, disabled, className, label }: { icon: React.ReactNode, onClick?: () => void, disabled?: boolean, className?: string, label?: string }) {
   return (
-    <button 
+    <button
       disabled={disabled}
       onClick={onClick}
       className={cn(
@@ -309,20 +356,20 @@ function ToolbarButton({ icon, onClick, disabled, className, label }: { icon: Re
 
 function TabButton({ active, onClick, label }: { active: boolean, onClick: () => void, label: string }) {
   return (
-    <button 
+    <button
       onClick={onClick}
       className={cn(
         "px-8 py-3 text-xs font-bold uppercase tracking-widest border-b-[3px] transition-all relative",
-        active 
-          ? "border-blue-600 text-blue-700 bg-blue-50/30" 
+        active
+          ? "border-blue-600 text-blue-700 bg-blue-50/30"
           : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
       )}
     >
       {label}
       {active && (
-        <motion.div 
-          layoutId="activeTab" 
-          className="absolute inset-0 bg-blue-600/5 -z-10" 
+        <motion.div
+          layoutId="activeTab"
+          className="absolute inset-0 bg-blue-600/5 -z-10"
         />
       )}
     </button>
