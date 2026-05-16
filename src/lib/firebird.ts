@@ -7,7 +7,8 @@ dotenv.config({ path: ".env.local" });
 const fbConfig = {
   host: process.env.FIREBIRD_HOST || "localhost",
   port: parseInt(process.env.FIREBIRD_PORT || "3050"),
-  database: process.env.FIREBIRD_DATABASE || "C:\\Program Files\\Firebird\\MAXFACTU.fdb",
+  //database: process.env.FIREBIRD_DATABASE || "C:\\Program Files\\Firebird\\MAXFACTU.fdb",
+  database: process.env.FIREBIRD_DATABASE || "D:\\DELFOS\\Virtual\\datos\\LONPER.FDB",
   user: process.env.FIREBIRD_USER || "SYSDBA",
   password: process.env.FIREBIRD_PASSWORD || "masterkey",
   lowercase_keys: false,
