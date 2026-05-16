@@ -10,7 +10,8 @@ import {
   Save, 
   X, 
   RefreshCw,
-  Search
+  Search,
+  ShieldCheck 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Familia, TipoIva } from "@/src/types";
