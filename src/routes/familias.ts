@@ -4,6 +4,27 @@ import { v4 as uuidv4 } from "uuid";
 
 const router = Router();
 
+router.post('/', async (req, res) => {
+  try {
+    const { empresa, ejercicio, canal, familia } = req.body;
+    const db = getDB();
+    
+    const result = await db.query(`
+      SELECT * FROM VER_FAMILIAS_CUENTAS
+      WHERE EMPRESA = ? AND 
+            EJERCICIO = ? AND 
+            CANAL = ? AND 
+            FAMILIA <> ?
+      ORDER BY FAMILIA
+    `, [empresa, ejercicio, canal, familia]);
+    
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al cargar familias' });
+  }
+});
+
+
 // GET todas las familias
 router.get("/", async (req, res) => {
   try {

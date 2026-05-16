@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { FamiliasView } from "./components/FamiliasView";
 import { MenuCategory } from "./types";
-import { LayoutDashboard, Bell, Search, User } from "lucide-react";
+import { LayoutDashboard, Bell, Search, Settings } from "lucide-react";
+import { EntornoProvider } from './context/EntornoContext';
+import { EntornoConfig } from './components/EntornoConfig';
 
-export default function App() {
+function AppContent() {
   const [activeCategory, setActiveCategory] = useState<MenuCategory | null>("Almacenes");
   const [activeItem, setActiveItem] = useState("Familias");
+  const [showEntorno, setShowEntorno] = useState(false);
 
   const renderContent = () => {
     if (activeItem === "Familias") {
@@ -47,6 +50,20 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-6">
+            {/* Botón para desplegar/configurar el Entorno */}
+            <button
+              onClick={() => setShowEntorno(!showEntorno)}
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-colors border ${
+                showEntorno 
+                  ? "bg-blue-50 text-blue-600 border-blue-200" 
+                  : "bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600 border-slate-200"
+              }`}
+              title="Configurar Entorno (Empresa, Ejercicio, Canal, Serie)"
+            >
+              <Settings size={14} />
+              <span className="hidden sm:inline">Entorno</span>
+            </button>
+
             <div className="relative group">
               <input 
                 type="text" 
@@ -71,6 +88,13 @@ export default function App() {
           </div>
         </header>
 
+        {/* Panel Colapsable de Configuración de Entorno */}
+        {showEntorno && (
+          <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 shadow-inner animate-in slide-in-from-top-2 duration-200">
+            <EntornoConfig />
+          </div>
+        )}
+
         {/* Dynamic Content */}
         <main className="flex-1 relative overflow-hidden bg-slate-50">
           {renderContent()}
@@ -83,7 +107,7 @@ export default function App() {
               <span className="mr-2 h-2 w-2 rounded-full bg-green-500 shadow-sm"></span> Online: Server Principal
             </div>
             <div className="flex items-center border-r border-slate-300 px-4">
-              Base de Datos: <span className="ml-1 text-slate-800 font-mono">SQL Server Express</span>
+              Base de Datos: <span className="ml-1 text-slate-800 font-mono">Firebird / Node-API</span>
             </div>
           </div>
           <div className="ml-auto font-medium hidden md:block text-slate-400">
@@ -92,5 +116,14 @@ export default function App() {
         </footer>
       </div>
     </div>
+  );
+}
+
+// Export único y correcto
+export default function App() {
+  return (
+    <EntornoProvider>
+      <AppContent />
+    </EntornoProvider>
   );
 }

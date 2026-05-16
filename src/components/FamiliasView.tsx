@@ -1,9 +1,10 @@
+import { useEntorno } from '../context/EntornoContext';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,
+  ChevronsLeft,0
   ChevronsRight,
   Plus,
   Trash2,
@@ -18,6 +19,7 @@ import { Familia, TipoIva } from "@/src/types";
 import { cn } from "@/src/lib/utils";
 
 export function FamiliasView() {
+  const { entorno } = useEntorno();
   const [familias, setFamilias] = useState<Familia[]>([]);
   const [tiposIva, setTiposIva] = useState<TipoIva[]>([]);
   const [activeTab, setActiveTab] = useState<"tabla" | "ficha">("tabla");
@@ -30,6 +32,25 @@ export function FamiliasView() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const cargarFamilias = async () => {
+    try {
+      const response = await fetch('/api/familias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          empresa: entorno.empresa,
+          ejercicio: entorno.ejercicio,
+          canal: entorno.canal,
+          familia: 123 // o el valor que necesites
+        })
+      });
+      const data = await response.json();
+      setFamilias(data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
