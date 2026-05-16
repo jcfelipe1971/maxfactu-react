@@ -16,13 +16,33 @@ router.get('/empresas', async (req: Request, res: Response) => {
        ORDER BY TITULO`
     );
     
+    console.log('📦 Resultado raw:', JSON.stringify(result, null, 2));
     console.log(`✅ Empresas encontradas: ${result.length}`);
     
-    const empresas = result.map((row: any) => ({
-      value: row.EMPRESA,
-      label: row.TITULO
-    }));
+    // Verificar el formato del primer registro
+    if (result.length > 0) {
+      console.log('📋 Primer registro:', result[0]);
+      console.log('📋 Tipo:', Array.isArray(result[0]) ? 'ARRAY' : 'OBJECT');
+    }
     
+    let empresas;
+    
+    // Si es array (formato [EMPRESA, TITULO])
+    if (result.length > 0 && Array.isArray(result[0])) {
+      empresas = result.map((row: any[]) => ({
+        value: row[0], // EMPRESA está en la posición 0
+        label: row[1]  // TITULO está en la posición 1
+      }));
+    } 
+    // Si es objeto (formato {EMPRESA: 1, TITULO: "..."})
+    else {
+      empresas = result.map((row: any) => ({
+        value: row.EMPRESA,
+        label: row.TITULO
+      }));
+    }
+    
+    console.log('✅ Empresas procesadas:', empresas);
     res.json(empresas);
   } catch (error) {
     console.error('❌ Error en /api/entorno/empresas:', error);
@@ -51,16 +71,29 @@ router.get('/ejercicios', async (req: Request, res: Response) => {
       [empresa]
     );
     
-    console.log(`✅ Ejercicios encontrados: ${result.length}`);
+    console.log('📦 Resultado raw:', JSON.stringify(result, null, 2));
     
-    const ejercicios = result.map((row: any) => {
-      const apertura = row.APERTURA ? new Date(row.APERTURA).toLocaleDateString('es-ES') : '';
-      const cierre = row.CIERRE ? new Date(row.CIERRE).toLocaleDateString('es-ES') : '';
-      return {
-        value: row.EJERCICIO,
-        label: `${row.EJERCICIO} (${apertura} - ${cierre})`
-      };
-    });
+    let ejercicios;
+    
+    if (result.length > 0 && Array.isArray(result[0])) {
+      ejercicios = result.map((row: any[]) => {
+        const apertura = row[1] ? new Date(row[1]).toLocaleDateString('es-ES') : '';
+        const cierre = row[2] ? new Date(row[2]).toLocaleDateString('es-ES') : '';
+        return {
+          value: row[0],
+          label: `${row[0]} (${apertura} - ${cierre})`
+        };
+      });
+    } else {
+      ejercicios = result.map((row: any) => {
+        const apertura = row.APERTURA ? new Date(row.APERTURA).toLocaleDateString('es-ES') : '';
+        const cierre = row.CIERRE ? new Date(row.CIERRE).toLocaleDateString('es-ES') : '';
+        return {
+          value: row.EJERCICIO,
+          label: `${row.EJERCICIO} (${apertura} - ${cierre})`
+        };
+      });
+    }
     
     res.json(ejercicios);
   } catch (error) {
@@ -90,12 +123,21 @@ router.get('/canales', async (req: Request, res: Response) => {
       [empresa, ejercicio]
     );
     
-    console.log(`✅ Canales encontrados: ${result.length}`);
+    console.log('📦 Resultado raw:', JSON.stringify(result, null, 2));
     
-    const canales = result.map((row: any) => ({
-      value: row.CANAL,
-      label: `Canal ${row.CANAL}`
-    }));
+    let canales;
+    
+    if (result.length > 0 && Array.isArray(result[0])) {
+      canales = result.map((row: any[]) => ({
+        value: row[0],
+        label: `Canal ${row[0]}`
+      }));
+    } else {
+      canales = result.map((row: any) => ({
+        value: row.CANAL,
+        label: `Canal ${row.CANAL}`
+      }));
+    }
     
     res.json(canales);
   } catch (error) {
@@ -125,12 +167,21 @@ router.get('/series', async (req: Request, res: Response) => {
       [empresa, ejercicio, canal]
     );
     
-    console.log(`✅ Series encontradas: ${result.length}`);
+    console.log('📦 Resultado raw:', JSON.stringify(result, null, 2));
     
-    const series = result.map((row: any) => ({
-      value: row.SERIE,
-      label: `${row.SERIE} - ${row.TITULO}`
-    }));
+    let series;
+    
+    if (result.length > 0 && Array.isArray(result[0])) {
+      series = result.map((row: any[]) => ({
+        value: row[0],
+        label: `${row[0]} - ${row[1]}`
+      }));
+    } else {
+      series = result.map((row: any) => ({
+        value: row.SERIE,
+        label: `${row.SERIE} - ${row.TITULO}`
+      }));
+    }
     
     res.json(series);
   } catch (error) {
