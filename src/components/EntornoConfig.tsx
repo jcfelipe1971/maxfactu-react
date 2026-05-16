@@ -24,6 +24,9 @@ export function EntornoConfig() {
     }
     localStorage.setItem('entorno', JSON.stringify(entorno));
     alert('✅ Entorno guardado correctamente');
+    
+    // 🔥 Disparar evento personalizado para notificar a otros componentes
+    window.dispatchEvent(new CustomEvent('entornoGuardado', { detail: entorno }));
   };
 
   const handleRecargar = () => {
