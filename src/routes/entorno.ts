@@ -37,8 +37,8 @@ router.get('/empresas', async (req: Request, res: Response) => {
     // Si es objeto (formato {EMPRESA: 1, TITULO: "..."})
     else {
       empresas = result.map((row: any) => ({
-        value: row.EMPRESA,
-        label: row.TITULO
+        value: row.enpresa,
+        label: row.titulo
       }));
     }
     
@@ -86,10 +86,10 @@ router.get('/ejercicios', async (req: Request, res: Response) => {
       });
     } else {
       ejercicios = result.map((row: any) => {
-        const apertura = row.APERTURA ? new Date(row.APERTURA).toLocaleDateString('es-ES') : '';
-        const cierre = row.CIERRE ? new Date(row.CIERRE).toLocaleDateString('es-ES') : '';
+        const apertura = row.apertura ? new Date(row.apertura).toLocaleDateString('es-ES') : '';
+        const cierre = row.cierre ? new Date(row.cierre).toLocaleDateString('es-ES') : '';
         return {
-          value: row.EJERCICIO,
+          value: row.ejercicio,
           label: `${row.EJERCICIO} (${apertura} - ${cierre})`
         };
       });
@@ -134,8 +134,8 @@ router.get('/canales', async (req: Request, res: Response) => {
       }));
     } else {
       canales = result.map((row: any) => ({
-        value: row.CANAL,
-        label: `Canal ${row.CANAL}`
+        value: row.canal,
+        label: `Canal ${row.canal}`
       }));
     }
     
@@ -178,8 +178,8 @@ router.get('/series', async (req: Request, res: Response) => {
       }));
     } else {
       series = result.map((row: any) => ({
-        value: row.SERIE,
-        label: `${row.SERIE} - ${row.TITULO}`
+        value: row.serie,
+        label: `${row.serie} - ${row.titulo}`
       }));
     }
     
