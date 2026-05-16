@@ -18,7 +18,6 @@ export function FamiliasView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Modificado para enviar por POST la información del entorno guardado actual
   const cargarFamilias = async () => {
     if (!entorno.empresa || !entorno.ejercicio || !entorno.canal) {
       setError('⚠️ Configure primero Empresa, Ejercicio y Canal en el menú de entorno superior y guarde.');
@@ -32,7 +31,12 @@ export function FamiliasView() {
     try {
       console.log('📡 Consultando familias para el entorno:', entorno);
       
-      const response = await fetch('/api/familias', {
+      // 🔹 FORZAMOS EL ORIGEN RELATIVO CORRECTO O ABSOLUTO DETECTANDO EL PUERTO DEL BACKEND
+      const API_URL = window.location.origin.includes('5173') 
+        ? 'http://localhost:3000/api/familias' 
+        : '/api/familias';
+
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -43,6 +47,12 @@ export function FamiliasView() {
           canal: entorno.canal
         })
       });
+
+      // Si Express o Vite devuelven HTML por error, lo interceptamos antes de que rompa el JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("El servidor no respondió con JSON válido. Revisa las rutas de Express.");
+      }
 
       if (!response.ok) {
         throw new Error(`Error en el servidor: Estado ${response.status}`);
