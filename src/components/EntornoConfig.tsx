@@ -46,14 +46,14 @@ export function EntornoConfig() {
   return (
     <div className="bg-slate-800 rounded-lg shadow-lg overflow-hidden">
       {/* Header colapsable - SIN botón anidado */}
-      <div 
+      <div
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-4 hover:bg-slate-700 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2">
           <span className="text-xl">⚙️</span>
           <h2 className="text-lg font-semibold text-white">Configuración del Entorno</h2>
-          
+
           {/* ✅ Mostrar información solo si hay empresa */}
           {empresaLabel && (
             <span className="text-sm text-slate-400 ml-4">
@@ -72,7 +72,7 @@ export function EntornoConfig() {
           >
             <RefreshCw className="w-4 h-4 text-white" />
           </button>
-          
+
           <button
             onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
             className="p-2 hover:bg-slate-600 rounded transition-colors"
@@ -92,12 +92,13 @@ export function EntornoConfig() {
             </label>
             <select
               value={entorno.empresa || ''}
-              onChange={(e) => setEntorno({
+              onChange={(e) => setEntorno(prev => ({
+                ...prev,
                 empresa: e.target.value ? Number(e.target.value) : null,
                 ejercicio: null,
                 canal: null,
                 serie: ''
-              })}
+              }))}
               disabled={loadingEmpresas}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
@@ -121,19 +122,20 @@ export function EntornoConfig() {
             </label>
             <select
               value={entorno.ejercicio || ''}
-              onChange={(e) => setEntorno({
+              onChange={(e) => setEntorno(prev => ({
+                ...prev,
                 ejercicio: e.target.value ? Number(e.target.value) : null,
                 canal: null,
                 serie: ''
-              })}
+              }))}
               disabled={!entorno.empresa || loadingEjercicios}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">
-                {!entorno.empresa ? 'Seleccione empresa primero' : 
-                 loadingEjercicios ? 'Cargando...' : 'Seleccione ejercicio'}
+                {!entorno.empresa ? 'Seleccione empresa primero' :
+                  loadingEjercicios ? 'Cargando...' : 'Seleccione ejercicio'}
               </option>
               {ejercicios.map(eje => (
                 <option key={eje.value} value={eje.value}>
@@ -150,18 +152,19 @@ export function EntornoConfig() {
             </label>
             <select
               value={entorno.canal || ''}
-              onChange={(e) => setEntorno({
+              onChange={(e) => setEntorno(prev => ({
+                ...prev,
                 canal: e.target.value ? Number(e.target.value) : null,
                 serie: ''
-              })}
+              }))}
               disabled={!entorno.ejercicio || loadingCanales}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">
-                {!entorno.ejercicio ? 'Seleccione ejercicio primero' : 
-                 loadingCanales ? 'Cargando...' : 'Seleccione canal'}
+                {!entorno.ejercicio ? 'Seleccione ejercicio primero' :
+                  loadingCanales ? 'Cargando...' : 'Seleccione canal'}
               </option>
               {canales.map(can => (
                 <option key={can.value} value={can.value}>
@@ -178,7 +181,10 @@ export function EntornoConfig() {
             </label>
             <select
               value={entorno.serie || ''}
-              onChange={(e) => setEntorno({ serie: e.target.value })}
+              onChange={(e) => setEntorno(prev => ({
+                ...prev,
+                serie: e.target.value
+              }))}
               disabled={!entorno.canal || loadingSeries}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
@@ -215,7 +221,7 @@ export function EntornoConfig() {
             >
               Limpiar
             </button>
-            
+
             <button
               onClick={handleGuardar}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors"
