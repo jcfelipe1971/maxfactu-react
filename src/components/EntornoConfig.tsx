@@ -1,7 +1,7 @@
 // src/components/EntornoConfig.tsx
 import { useState, useEffect } from 'react';
 import { useEntorno } from '../context/EntornoContext';
-import { ChevronDown, ChevronUp, Save, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp, Save, RefreshCw, AlertCircle } from 'lucide-react';
 
 export function EntornoConfig() {
   const { 
@@ -12,15 +12,23 @@ export function EntornoConfig() {
   } = useEntorno();
   
   const [expanded, setExpanded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    cargarTodo();
+    const cargarInicial = async () => {
+      try {
+        await cargarTodo();
+      } catch (err) {
+        console.error('Error cargando entorno:', err);
+        setError('Error al cargar datos del entorno');
+      }
+    };
+    cargarInicial();
   }, []);
 
   const handleGuardar = () => {
-    // Validar campos obligatorios
     if (!entorno.empresa || !entorno.ejercicio || !entorno.canal) {
-      alert('Debe seleccionar Empresa, Ejercicio y Canal');
+      alert('⚠️ Debe seleccionar Empresa, Ejercicio y Canal');
       return;
     }
     
@@ -28,8 +36,13 @@ export function EntornoConfig() {
     alert('✅ Entorno guardado correctamente');
   };
 
-  const handleRecargar = () => {
-    cargarTodo();
+  const handleRecargar = async () => {
+    try {
+      setError(null);
+      await cargarTodo();
+    } catch (err) {
+      setError('Error al recargar datos');
+    }
   };
 
   return (
@@ -43,10 +56,9 @@ export function EntornoConfig() {
           <span className="font-semibold text-lg">⚙️ Configuración del Entorno</span>
           {entorno.empresa && (
             <span className="text-sm text-slate-300 hidden md:inline">
-              {empresas.find(e => e.value === entorno.empresa)?.label} | 
-              Ej. {entorno.ejercicio} | 
-              Canal {entorno.canal}
-              {entorno.serie && ` | Serie ${entorno.serie}`}
+              {empresas.find(e => e.value === entorno.empresa)?.label || '...'} | 
+              Ej. {entorno.ejercicio || '-'} | 
+              Canal {entorno.canal || '-'}
             </span>
           )}
         </div>
@@ -65,6 +77,13 @@ export function EntornoConfig() {
       {/* Panel expandido */}
       {expanded && (
         <div className="p-4 border-t border-slate-700 space-y-4 animate-in slide-in-from-top-2 duration-200">
+          {error && (
+            <div className="bg-red-900/50 border border-red-500 text-red-200 p-3 rounded flex items-center gap-2">
+              <AlertCircle size={18} />
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             
             {/* 🏢 Empresa */}
@@ -74,20 +93,26 @@ export function EntornoConfig() {
               </label>
               <select
                 value={entorno.empresa ?? ''}
-                onChange={(e) => setEntorno({ 
-                  empresa: e.target.value ? Number(e.target.value) : null,
-                  ejercicio: null, canal: null, serie: '' // Reset dependientes
-                })}
+                onChange={(e) => {
+                  setError(null);
+                  setEntorno({ 
+                    empresa: e.target.value ? Number(e.target.value) : null,
+                    ejercicio: null, canal: null, serie: ''
+                  });
+                }}
                 disabled={loadingEmpresas}
                 className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white 
                          focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
                          disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Seleccione...</option>
+                <option value="">Cargando...</option>
                 {empresas.map(emp => (
                   <option key={emp.value} value={emp.value}>{emp.label}</option>
                 ))}
               </select>
+              {empresas.length === 0 && !loadingEmpresas && (
+                <p className="text-xs text-amber-400 mt-1">⚠️ No hay empresas disponibles</p>
+              )}
             </div>
 
             {/* 📅 Ejercicio */}
@@ -99,14 +124,17 @@ export function EntornoConfig() {
                 value={entorno.ejercicio ?? ''}
                 onChange={(e) => setEntorno({ 
                   ejercicio: e.target.value ? Number(e.target.value) : null,
-                  canal: null, serie: '' // Reset dependientes
+                  canal: null, serie: ''
                 })}
                 disabled={!entorno.empresa || loadingEjercicios}
                 className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white 
                          focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
                          disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Seleccione...</option>
+                <option value="">
+                  {!entorno.empresa ? 'Seleccione empresa primero' : 
+                   loadingEjercicios ? 'Cargando...' : 'Sin ejercicios'}
+                </option>
                 {ejercicios.map(eje => (
                   <option key={eje.value} value={eje.value}>{eje.label}</option>
                 ))}
@@ -122,14 +150,17 @@ export function EntornoConfig() {
                 value={entorno.canal ?? ''}
                 onChange={(e) => setEntorno({ 
                   canal: e.target.value ? Number(e.target.value) : null,
-                  serie: '' // Reset dependiente
+                  serie: ''
                 })}
                 disabled={!entorno.ejercicio || loadingCanales}
                 className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white 
                          focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
                          disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Seleccione...</option>
+                <option value="">
+                  {!entorno.ejercicio ? 'Seleccione ejercicio primero' : 
+                   loadingCanales ? 'Cargando...' : 'Sin canales'}
+                </option>
                 {canales.map(can => (
                   <option key={can.value} value={can.value}>{can.label}</option>
                 ))}
@@ -174,9 +205,12 @@ export function EntornoConfig() {
           {/* Botones de acción */}
           <div className="flex justify-end gap-3 pt-3 border-t border-slate-700">
             <button
-              onClick={() => setEntorno({ 
-                empresa: null, ejercicio: null, canal: null, serie: '' 
-              })}
+              onClick={() => {
+                setEntorno({ 
+                  empresa: null, ejercicio: null, canal: null, serie: '' 
+                });
+                setError(null);
+              }}
               className="px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700 rounded transition-colors"
             >
               Limpiar
