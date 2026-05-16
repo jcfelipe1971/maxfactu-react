@@ -55,6 +55,20 @@ async function startServer() {
   });
 }
 
+import { closeDB } from './src/lib/firebird';
+
+process.on('SIGINT', () => {
+  console.log('\n🛑 Cerrando servidor...');
+  closeDB();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n🛑 Cerrando servidor...');
+  closeDB();
+  process.exit(0);
+});
+
 startServer().catch((error) => {
   console.error("❌ Error iniciando servidor:", error);
   process.exit(1);
