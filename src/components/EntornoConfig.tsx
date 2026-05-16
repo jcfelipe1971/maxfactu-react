@@ -11,7 +11,7 @@ export function EntornoConfig() {
     cargarTodo
   } = useEntorno();
 
-  const [expanded, setExpanded] = useState(true); // ✅ Iniciar expandido
+  const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
     cargarTodo();
@@ -35,17 +35,20 @@ export function EntornoConfig() {
       empresa: null,
       ejercicio: null,
       canal: null,
-      serie: ''
+      serie: '',
+      fechaTrab: new Date().toISOString().split('T')[0] // fecha actual por defecto
     });
     localStorage.removeItem('entorno');
   };
 
-  // ✅ Obtener etiqueta de empresa seleccionada
-  const empresaLabel = entorno.empresa ? empresas.find(e => e.value === entorno.empresa)?.label : null;
+  // ✅ Etiqueta de empresa seleccionada
+  const empresaLabel = entorno.empresa 
+    ? empresas.find(e => e.value === entorno.empresa || e.value?.toString() === entorno.empresa?.toString())?.label 
+    : null;
 
   return (
     <div className="bg-slate-800 rounded-lg shadow-lg overflow-hidden">
-      {/* Header colapsable - SIN botón anidado */}
+      {/* Header colapsable */}
       <div
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-4 hover:bg-slate-700 transition-colors cursor-pointer"
@@ -54,7 +57,6 @@ export function EntornoConfig() {
           <span className="text-xl">⚙️</span>
           <h2 className="text-lg font-semibold text-white">Configuración del Entorno</h2>
 
-          {/* ✅ Mostrar información solo si hay empresa */}
           {empresaLabel && (
             <span className="text-sm text-slate-400 ml-4">
               {empresaLabel} | Ej. {entorno.ejercicio} | Canal {entorno.canal}
@@ -64,7 +66,6 @@ export function EntornoConfig() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* ✅ Botón de recargar FUERA del header clickable */}
           <button
             onClick={(e) => { e.stopPropagation(); handleRecargar(); }}
             className="p-2 hover:bg-slate-600 rounded transition-colors"
@@ -85,27 +86,32 @@ export function EntornoConfig() {
       {/* Panel expandido */}
       {expanded && (
         <div className="p-4 space-y-4 border-t border-slate-700">
+          
           {/* 🏢 Empresa */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">
               Empresa *
             </label>
             <select
-              value={entorno.empresa || ''}
-              onChange={(e) => setEntorno(prev => ({
-                ...prev,
-                empresa: e.target.value ? Number(e.target.value) : null,
-                ejercicio: null,
-                canal: null,
-                serie: ''
-              }))}
+              value={entorno.empresa?.toString() || ''}
+              onChange={(e) => {
+                const valor = e.target.value ? Number(e.target.value) : null;
+                console.log('🔄 Empresa seleccionada:', valor); // Debug
+                setEntorno(prev => ({
+                  ...prev,
+                  empresa: valor,
+                  ejercicio: null,
+                  canal: null,
+                  serie: ''
+                }));
+              }}
               disabled={loadingEmpresas}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">
-                {loadingEmpresas ? 'Cargando...' : 'Seleccione empresa'}
+                {loadingEmpresas ? 'Cargando empresas...' : 'Seleccione empresa'}
               </option>
               {empresas.map(emp => (
                 <option key={emp.value} value={emp.value}>
@@ -121,13 +127,16 @@ export function EntornoConfig() {
               Ejercicio *
             </label>
             <select
-              value={entorno.ejercicio || ''}
-              onChange={(e) => setEntorno(prev => ({
-                ...prev,
-                ejercicio: e.target.value ? Number(e.target.value) : null,
-                canal: null,
-                serie: ''
-              }))}
+              value={entorno.ejercicio?.toString() || ''}
+              onChange={(e) => {
+                const valor = e.target.value ? Number(e.target.value) : null;
+                setEntorno(prev => ({
+                  ...prev,
+                  ejercicio: valor,
+                  canal: null,
+                  serie: ''
+                }));
+              }}
               disabled={!entorno.empresa || loadingEjercicios}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
@@ -151,12 +160,15 @@ export function EntornoConfig() {
               Canal *
             </label>
             <select
-              value={entorno.canal || ''}
-              onChange={(e) => setEntorno(prev => ({
-                ...prev,
-                canal: e.target.value ? Number(e.target.value) : null,
-                serie: ''
-              }))}
+              value={entorno.canal?.toString() || ''}
+              onChange={(e) => {
+                const valor = e.target.value ? Number(e.target.value) : null;
+                setEntorno(prev => ({
+                  ...prev,
+                  canal: valor,
+                  serie: ''
+                }));
+              }}
               disabled={!entorno.ejercicio || loadingCanales}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
@@ -181,10 +193,7 @@ export function EntornoConfig() {
             </label>
             <select
               value={entorno.serie || ''}
-              onChange={(e) => setEntorno(prev => ({
-                ...prev,
-                serie: e.target.value
-              }))}
+              onChange={(e) => setEntorno(prev => ({ ...prev, serie: e.target.value }))}
               disabled={!entorno.canal || loadingSeries}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
@@ -206,8 +215,8 @@ export function EntornoConfig() {
             </label>
             <input
               type="date"
-              value={entorno.fechaTrab}
-              onChange={(e) => setEntorno({ fechaTrab: e.target.value })}
+              value={entorno.fechaTrab || ''}
+              onChange={(e) => setEntorno(prev => ({ ...prev, fechaTrab: e.target.value }))}
               className="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white
                 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
