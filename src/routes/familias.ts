@@ -4,19 +4,19 @@ import { executeQuery, executeUpdate } from "../lib/firebird";
 
 const router = Router();
 
-// 🔹 POST /api/familias - Obtener familias filtradas por el entorno
+// 🔹 POST /api/familias - Obtener familias filtradas por el entorno seleccionado
 router.post('/', async (req, res) => {
   try {
-    const { empresa, ejercicio, canal, familia } = req.body;
+    const { empresa, ejercicio, canal } = req.body;
     
-    console.log(`📡 Request POST /api/familias - Empresa: ${empresa}, Ejercicio: ${ejercicio}, Canal: ${canal}`);
+    console.log(`📡 Filtro Recibido -> Empresa: ${empresa}, Ejercicio: ${ejercicio}, Canal: ${canal}`);
 
     if (!empresa || !ejercicio || !canal) {
-      return res.status(400).json({ error: 'Faltan parámetros obligatorios del entorno' });
+      return res.status(400).json({ error: 'Faltan parámetros obligatorios del entorno (empresa, ejercicio o canal)' });
     }
 
-    // Usamos la vista VER_FAMILIAS_CUENTAS tal como la tienes configurada
-    // Si familia es '0' (u omitido), traemos todas las familias de ese entorno configurado
+    // 1. Usamos executeQuery que es tu método real de conexión a Firebird
+    // 2. Quitamos la condición incorrecta de "FAMILIA <> ?" para que devuelva el listado completo
     const result = await executeQuery(`
       SELECT FAMILIA, TITULO, TIPO_IVA, PERMITE_NEGATIVO 
       FROM VER_FAMILIAS_CUENTAS
@@ -24,57 +24,45 @@ router.post('/', async (req, res) => {
             EJERCICIO = ? AND 
             CANAL = ?
       ORDER BY FAMILIA
-    `, [empresa, ejercicio, canal]);
+    `, [Number(empresa), Number(ejercicio), Number(canal)]);
     
-    // Normalizamos el formato del resultado (Array u Objeto) según cómo responda tu librería de Firebird
+    // Normalizamos la respuesta por si Firebird devuelve un array de arrays o un objeto mapeado
     let familias = [];
-    if (result.length > 0 && Array.isArray(result[0])) {
-      familias = result.map((row: any[]) => ({
-        familia: row[0],
-        titulo: row[1],
-        tipo_iva: row[2],
-        permite_negativo: row[3]
-      }));
-    } else {
-      familias = result.map((row: any) => ({
-        familia: row.FAMILIA || row.familia,
-        titulo: row.TITULO || row.titulo,
-        tipo_iva: row.TIPO_IVA || row.tipo_iva,
-        permite_negativo: row.PERMITE_NEGATIVO || row.permite_negativo
-      }));
+    if (result && result.length > 0) {
+      if (Array.isArray(result[0])) {
+        familias = result.map((row: any[]) => ({
+          familia: row[0],
+          titulo: row[1],
+          tipo_iva: row[2],
+          permite_negativo: row[3]
+        }));
+      } else {
+        familias = result.map((row: any) => ({
+          familia: row.FAMILIA || row.familia,
+          titulo: row.TITULO || row.titulo,
+          tipo_iva: row.TIPO_IVA || row.tipo_iva,
+          permite_negativo: row.PERMITE_NEGATIVO || row.permite_negativo
+        }));
+      }
     }
 
+    console.log(`✅ Enviando ${familias.length} familias encontradas para este entorno.`);
     res.json(familias);
   } catch (error) {
-    console.error("❌ Error al cargar familias por entorno:", error);
-    res.status(500).json({ error: 'Error al cargar familias' });
+    console.error("❌ Error crítico en POST /api/familias:", error);
+    res.status(500).json({ error: 'Error interno al cargar familias desde Firebird' });
   }
 });
 
-// GET todas las familias (Mantenemos tu ruta por defecto intacta)
+// 🔹 GET todas las familias generales
 router.get("/", async (req, res) => {
   try {
     const rows = await executeQuery(
       `SELECT 
-        FAMILIA as id,
-        TITULO,
-        TIPO_IVA,
-        EMPRESA,
-        EJERCICIO,
-        CANAL,
-        CTA_COMPRAS,
-        CTA_VENTAS,
-        PAIS,
-        VENTA,
-        PTO_VERDE,
-        MARGEN,
-        TIPO_REDONDEO,
-        ACT_TAR_AUTOM,
-        TITULO_WEB,
-        WEB,
-        ORDEN,
-        TIPO_PRECIO_BASE,
-        ULT_MODIFICACION
+        FAMILIA as id, TITULO, TIPO_IVA, EMPRESA, EJERCICIO, CANAL,
+        CTA_COMPRAS, CTA_VENTAS, PAIS, VENTA, PTO_VERDE, MARGEN,
+        TIPO_REDONDEO, ACT_TAR_AUTOM, TITULO_WEB, WEB, ORDEN,
+        TIPO_PRECIO_BASE, ULT_MODIFICACION
        FROM VER_FAMILIAS_CUENTAS
        ORDER BY ULT_MODIFICACION DESC`
     );
@@ -101,7 +89,6 @@ router.get("/", async (req, res) => {
       ultModificacion: row.ULT_MODIFICACION,
     }));
 
-    console.log(`✅ Se encontraron ${familias.length} familias generales`);
     res.json(familias);
   } catch (error) {
     console.error("❌ Error fetching familias:", error);
@@ -109,30 +96,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET familia por ID
+// 🔹 GET familia por ID
 router.get("/:id", async (req, res) => {
   try {
     const rows = await executeQuery(
       `SELECT 
-        FAMILIA as id,
-        TITULO,
-        TIPO_IVA,
-        EMPRESA,
-        EJERCICIO,
-        CANAL,
-        CTA_COMPRAS,
-        CTA_VENTAS,
-        PAIS,
-        VENTA,
-        PTO_VERDE,
-        MARGEN,
-        TIPO_REDONDEO,
-        ACT_TAR_AUTOM,
-        TITULO_WEB,
-        WEB,
-        ORDEN,
-        TIPO_PRECIO_BASE,
-        ULT_MODIFICACION
+        FAMILIA as id, TITULO, TIPO_IVA, EMPRESA, EJERCICIO, CANAL,
+        CTA_COMPRAS, CTA_VENTAS, PAIS, VENTA, PTO_VERDE, MARGEN,
+        TIPO_REDONDEO, ACT_TAR_AUTOM, TITULO_WEB, WEB, ORDEN,
+        TIPO_PRECIO_BASE, ULT_MODIFICACION
        FROM VER_FAMILIAS_CUENTAS
        WHERE FAMILIA = ?`,
       [req.params.id]
@@ -172,8 +144,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST crear nueva familia
-router.post("/nueva", async (req, res) => { // Cambiado ligeramente el path secundario si lo necesitas, o mantenlo apuntando a tu lógica habitual
+// 🔹 POST crear nueva familia
+router.post("/nueva", async (req, res) => {
   try {
     const {
       empresa, ejercicio, canal, familia, titulo, tipoIva,
@@ -210,7 +182,7 @@ router.post("/nueva", async (req, res) => { // Cambiado ligeramente el path secu
   }
 });
 
-// PUT actualizar familia
+// 🔹 PUT actualizar familia
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -248,7 +220,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE familia
+// 🔹 DELETE familia
 router.delete("/:id", async (req, res) => {
   try {
     await executeUpdate("DELETE FROM VER_FAMILIAS_CUENTAS WHERE FAMILIA = ?", [req.params.id]);
