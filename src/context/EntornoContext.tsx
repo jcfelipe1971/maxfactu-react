@@ -19,19 +19,16 @@ interface EntornoContextType {
   entorno: EntornoData;
   setEntorno: (data: Partial<EntornoData>) => void;
   
-  // Listas de opciones
   empresas: OptionItem[];
   ejercicios: OptionItem[];
   canales: OptionItem[];
   series: OptionItem[];
   
-  // Estados de carga
   loadingEmpresas: boolean;
   loadingEjercicios: boolean;
   loadingCanales: boolean;
   loadingSeries: boolean;
   
-  // Métodos de carga
   cargarEmpresas: () => Promise<void>;
   cargarEjercicios: (empresa: number) => Promise<void>;
   cargarCanales: (empresa: number, ejercicio: number) => Promise<void>;
@@ -61,150 +58,121 @@ export function EntornoProvider({ children }: { children: ReactNode }) {
   const [loadingCanales, setLoadingCanales] = useState(false);
   const [loadingSeries, setLoadingSeries] = useState(false);
 
-  // ✅ Función setEntorno corregida - usa useCallback
   const setEntorno = useCallback((data: Partial<EntornoData>) => {
     setEntornoState(prev => {
-      const nuevoEntorno = { ...prev, ...data };
-      // Guardar inmediatamente en localStorage
-      localStorage.setItem('entorno', JSON.stringify(nuevoEntorno));
-      return nuevoEntorno;
+      const nuevo = { ...prev, ...data };
+      // Solo guardar si hay cambios reales
+      const guardado = localStorage.getItem('entorno');
+      if (guardado !== JSON.stringify(nuevo)) {
+        localStorage.setItem('entorno', JSON.stringify(nuevo));
+      }
+      return nuevo;
     });
   }, []);
 
-  const cargarEmpresas = async () => {
+  const cargarEmpresas = useCallback(async () => {
     setLoadingEmpresas(true);
     try {
       const res = await fetch('/api/entorno/empresas');
       const data = await res.json();
-      console.log('Empresas cargadas:', data); // 🔍 Debug
+      console.log('✅ Empresas cargadas:', data);
       setEmpresas(data);
 
-      // Si hay empresa guardada en localStorage, restaurarla
+      // Restaurar del localStorage solo la primera vez
       const guardado = localStorage.getItem('entorno');
-      if (guardado) {
+      if (guardado && !entorno.empresa) {
         const parsed = JSON.parse(guardado);
         if (parsed.empresa && data.find((e: OptionItem) => e.value === parsed.empresa)) {
           setEntornoState(prev => ({ ...prev, empresa: parsed.empresa }));
         }
       }
     } catch (error) {
-      console.error('Error cargando empresas:', error);
+      console.error('❌ Error cargando empresas:', error);
     } finally {
       setLoadingEmpresas(false);
     }
-  };
+  }, []); // ✅ Sin dependencias que causen bucles
 
-  const cargarEjercicios = async (empresa: number) => {
+  const cargarEjercicios = useCallback(async (empresa: number) => {
     setLoadingEjercicios(true);
     try {
-      console.log('Cargando ejercicios para empresa:', empresa); // 🔍 Debug
+      console.log('📅 Cargando ejercicios para empresa:', empresa);
       const res = await fetch(`/api/entorno/ejercicios?empresa=${empresa}`);
       const data = await res.json();
-      console.log('Ejercicios cargados:', data); // 🔍 Debug
+      console.log('✅ Ejercicios cargados:', data);
       setEjercicios(data);
-
-      // Restaurar ejercicio si es válido para esta empresa
-      const guardado = localStorage.getItem('entorno');
-      if (guardado) {
-        const parsed = JSON.parse(guardado);
-        if (parsed.empresa === empresa && parsed.ejercicio &&
-            data.find((e: OptionItem) => e.value === parsed.ejercicio)) {
-          setEntornoState(prev => ({ ...prev, ejercicio: parsed.ejercicio }));
-        }
-      }
     } catch (error) {
-      console.error('Error cargando ejercicios:', error);
+      console.error('❌ Error cargando ejercicios:', error);
     } finally {
       setLoadingEjercicios(false);
     }
-  };
+  }, []);
 
-  const cargarCanales = async (empresa: number, ejercicio: number) => {
+  const cargarCanales = useCallback(async (empresa: number, ejercicio: number) => {
     setLoadingCanales(true);
     try {
-      console.log('Cargando canales - Empresa:', empresa, 'Ejercicio:', ejercicio); // 🔍 Debug
+      console.log('🔗 Cargando canales - Empresa:', empresa, 'Ejercicio:', ejercicio);
       const res = await fetch(`/api/entorno/canales?empresa=${empresa}&ejercicio=${ejercicio}`);
       const data = await res.json();
-      console.log('Canales cargados:', data); // 🔍 Debug
+      console.log('✅ Canales cargados:', data);
       setCanales(data);
-
-      // Restaurar canal si es válido
-      const guardado = localStorage.getItem('entorno');
-      if (guardado) {
-        const parsed = JSON.parse(guardado);
-        if (parsed.empresa === empresa && parsed.ejercicio === ejercicio &&
-            parsed.canal && data.find((c: OptionItem) => c.value === parsed.canal)) {
-          setEntornoState(prev => ({ ...prev, canal: parsed.canal }));
-        }
-      }
     } catch (error) {
-      console.error('Error cargando canales:', error);
+      console.error('❌ Error cargando canales:', error);
     } finally {
       setLoadingCanales(false);
     }
-  };
+  }, []);
 
-  const cargarSeries = async (empresa: number, ejercicio: number, canal: number) => {
+  const cargarSeries = useCallback(async (empresa: number, ejercicio: number, canal: number) => {
     setLoadingSeries(true);
     try {
       const res = await fetch(`/api/entorno/series?empresa=${empresa}&ejercicio=${ejercicio}&canal=${canal}`);
       const data = await res.json();
+      console.log('✅ Series cargadas:', data);
       setSeries(data);
-
-      // Restaurar serie si es válida
-      const guardado = localStorage.getItem('entorno');
-      if (guardado) {
-        const parsed = JSON.parse(guardado);
-        if (parsed.empresa === empresa && parsed.ejercicio === ejercicio &&
-            parsed.canal === canal && parsed.serie &&
-            data.find((s: OptionItem) => s.value === parsed.serie)) {
-          setEntornoState(prev => ({ ...prev, serie: parsed.serie }));
-        }
-      }
     } catch (error) {
-      console.error('Error cargando series:', error);
+      console.error('❌ Error cargando series:', error);
     } finally {
       setLoadingSeries(false);
     }
-  };
+  }, []);
 
-  const cargarTodo = async () => {
+  const cargarTodo = useCallback(async () => {
     await cargarEmpresas();
-  };
+  }, [cargarEmpresas]);
 
-  // ✅ Efectos en cascada corregidos - ahora usan setEntornoState directamente
+  // ✅ Efectos en cascada con dependencias correctas
   useEffect(() => {
     if (entorno.empresa) {
-      console.log('🔄 Empresa cambiada:', entorno.empresa); // 🔍 Debug
+      console.log('🔄 Empresa cambiada:', entorno.empresa);
       cargarEjercicios(entorno.empresa);
-    } else {
+      // Resetear dependientes
       setEjercicios([]);
       setCanales([]);
       setSeries([]);
       setEntornoState(prev => ({ ...prev, ejercicio: null, canal: null, serie: '' }));
     }
-  }, [entorno.empresa]);
+  }, [entorno.empresa, cargarEjercicios]);
 
   useEffect(() => {
     if (entorno.empresa && entorno.ejercicio) {
-      console.log('🔄 Ejercicio cambiado:', entorno.ejercicio); // 🔍 Debug
+      console.log('🔄 Ejercicio cambiado:', entorno.ejercicio);
       cargarCanales(entorno.empresa, entorno.ejercicio);
-    } else {
+      // Resetear dependientes
       setCanales([]);
       setSeries([]);
       setEntornoState(prev => ({ ...prev, canal: null, serie: '' }));
     }
-  }, [entorno.ejercicio]);
+  }, [entorno.ejercicio, entorno.empresa, cargarCanales]);
 
   useEffect(() => {
     if (entorno.empresa && entorno.ejercicio && entorno.canal) {
-      console.log('🔄 Canal cambiado:', entorno.canal); // 🔍 Debug
+      console.log('🔄 Canal cambiado:', entorno.canal);
       cargarSeries(entorno.empresa, entorno.ejercicio, entorno.canal);
-    } else {
       setSeries([]);
       setEntornoState(prev => ({ ...prev, serie: '' }));
     }
-  }, [entorno.canal]);
+  }, [entorno.canal, entorno.empresa, entorno.ejercicio, cargarSeries]);
 
   return (
     <EntornoContext.Provider value={{
