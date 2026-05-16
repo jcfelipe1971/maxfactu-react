@@ -37,7 +37,7 @@ router.get('/empresas', async (req: Request, res: Response) => {
     // Si es objeto (formato {EMPRESA: 1, TITULO: "..."})
     else {
       empresas = result.map((row: any) => ({
-        value: row.enpresa,
+        value: row.empresa,
         label: row.titulo
       }));
     }

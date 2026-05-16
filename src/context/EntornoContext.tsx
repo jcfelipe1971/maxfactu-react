@@ -10,19 +10,34 @@ export interface EntornoData {
   usuario: string | null;
 }
 
-export interface OptionItem {
-  value: number | string;
-  label: string;
+export interface Empresa {
+  empresa: number;
+  titulo: string;
+}
+
+export interface Ejercicio {
+  ejercicio: number;
+  titulo: string;
+}
+
+export interface Canal {
+  canal: number;
+  titulo: string;
+}
+
+export interface Serie {
+  serie: string;
+  titulo: string;
 }
 
 interface EntornoContextType {
   entorno: EntornoData;
   setEntorno: (data: Partial<EntornoData>) => void;
   
-  empresas: OptionItem[];
-  ejercicios: OptionItem[];
-  canales: OptionItem[];
-  series: OptionItem[];
+  empresas: Empresa[];
+  ejercicios: Ejercicio[];
+  canales: Canal[];
+  series: Serie[];
   
   loadingEmpresas: boolean;
   loadingEjercicios: boolean;
@@ -48,10 +63,10 @@ export function EntornoProvider({ children }: { children: ReactNode }) {
     usuario: null,
   });
 
-  const [empresas, setEmpresas] = useState<OptionItem[]>([]);
-  const [ejercicios, setEjercicios] = useState<OptionItem[]>([]);
-  const [canales, setCanales] = useState<OptionItem[]>([]);
-  const [series, setSeries] = useState<OptionItem[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [ejercicios, setEjercicios] = useState<Ejercicio[]>([]);
+  const [canales, setCanales] = useState<Canal[]>([]);
+  const [series, setSeries] = useState<Serie[]>([]);
 
   const [loadingEmpresas, setLoadingEmpresas] = useState(false);
   const [loadingEjercicios, setLoadingEjercicios] = useState(false);
@@ -82,7 +97,7 @@ export function EntornoProvider({ children }: { children: ReactNode }) {
       const guardado = localStorage.getItem('entorno');
       if (guardado && !entorno.empresa) {
         const parsed = JSON.parse(guardado);
-        if (parsed.empresa && data.find((e: OptionItem) => e.value === parsed.empresa)) {
+        if (parsed.empresa && data.find((e: Empresa) => e.empresa === parsed.empresa)) {
           setEntornoState(prev => ({ ...prev, empresa: parsed.empresa }));
         }
       }
@@ -91,7 +106,7 @@ export function EntornoProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoadingEmpresas(false);
     }
-  }, []); // ✅ Sin dependencias que causen bucles
+  }, []);
 
   const cargarEjercicios = useCallback(async (empresa: number) => {
     setLoadingEjercicios(true);
