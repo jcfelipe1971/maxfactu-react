@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { 
-  ChevronLeft1, 
+  ChevronLeft, 
   ChevronRight, 
   ChevronsLeft, 
   ChevronsRight, 
