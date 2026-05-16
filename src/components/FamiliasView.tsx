@@ -4,7 +4,7 @@ import axios from "axios";
 import {
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,0
+  ChevronsLeft,
   ChevronsRight,
   Plus,
   Trash2,

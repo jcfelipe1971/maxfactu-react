@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 // Import routes
 import familiasRouter from "./src/routes/familias";
 import tiposIvaRouter from "./src/routes/tipos-iva";
+import entornoRoutes from './src/routes/entorno';
+
 
 dotenv.config({ path: ".env.local" });
 
@@ -18,7 +20,8 @@ async function startServer() {
   const PORT = process.env.PORT || 3000;
 
   app.use(express.json());
-
+  app.use('/api/entorno', entornoRoutes);
+  
   // Middleware para logs
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
