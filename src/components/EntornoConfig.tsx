@@ -22,11 +22,14 @@ export function EntornoConfig() {
       alert('Debe seleccionar Empresa, Ejercicio y Canal');
       return;
     }
-    localStorage.setItem('entorno', JSON.stringify(entorno));
-    alert('✅ Entorno guardado correctamente');
     
-    // 🔥 Disparar evento personalizado para notificar a otros componentes
+    // Guardar en localStorage
+    localStorage.setItem('entorno', JSON.stringify(entorno));
+    
+    // Disparar evento personalizado para notificar que el entorno fue guardado
     window.dispatchEvent(new CustomEvent('entornoGuardado', { detail: entorno }));
+    
+    alert('✅ Entorno guardado correctamente');
   };
 
   const handleRecargar = () => {
@@ -44,9 +47,14 @@ export function EntornoConfig() {
     localStorage.removeItem('entorno');
   };
 
-  // ✅ Etiqueta de empresa seleccionada
+  // ✅ Etiqueta de empresa seleccionada (mapeo seguro)
   const empresaLabel = entorno.empresa
-    ? empresas.find(e => e.value === entorno.empresa || e.value?.toString() === entorno.empresa?.toString())?.label
+    ? empresas.find(e => {
+        // Comparar tanto el value como el numero directo
+        return e.value === entorno.empresa || 
+               e.empresa === entorno.empresa ||
+               Number(e.value) === Number(entorno.empresa);
+      })?.label || `Empresa ${entorno.empresa}`
     : null;
 
   return (
@@ -100,8 +108,6 @@ export function EntornoConfig() {
               onChange={(e) => {
                 const valor = e.target.value ? Number(e.target.value) : null;
                 console.log('🔄 Empresa seleccionada:', valor);
-                // ❌ INCORRECTO: setEntorno(prev => ({ ...prev, empresa: valor, ... }));
-                // ✅ CORRECTO:
                 setEntorno({
                   empresa: valor,
                   ejercicio: null,
@@ -116,8 +122,8 @@ export function EntornoConfig() {
                 {loadingEmpresas ? 'Cargando empresas...' : 'Seleccione empresa'}
               </option>
               {empresas.map(emp => (
-                <option key={emp.value} value={emp.value}>
-                  {emp.label}
+                <option key={emp.value || emp.empresa} value={emp.value || emp.empresa}>
+                  {emp.label || emp.titulo}
                 </option>
               ))}
             </select>
@@ -132,7 +138,6 @@ export function EntornoConfig() {
               value={entorno.ejercicio?.toString() || ''}
               onChange={(e) => {
                 const valor = e.target.value ? Number(e.target.value) : null;
-                // ✅ Pasamos el objeto directamente
                 setEntorno({
                   ejercicio: valor,
                   canal: null,
@@ -147,8 +152,8 @@ export function EntornoConfig() {
                   loadingEjercicios ? 'Cargando...' : 'Seleccione ejercicio'}
               </option>
               {ejercicios.map(eje => (
-                <option key={eje.value} value={eje.value}>
-                  {eje.label}
+                <option key={eje.value || eje.ejercicio} value={eje.value || eje.ejercicio}>
+                  {eje.label || eje.titulo}
                 </option>
               ))}
             </select>
@@ -163,7 +168,6 @@ export function EntornoConfig() {
               value={entorno.canal?.toString() || ''}
               onChange={(e) => {
                 const valor = e.target.value ? Number(e.target.value) : null;
-                // ✅ Pasamos el objeto directamente
                 setEntorno({
                   canal: valor,
                   serie: ''
@@ -177,8 +181,8 @@ export function EntornoConfig() {
                   loadingCanales ? 'Cargando...' : 'Seleccione canal'}
               </option>
               {canales.map(can => (
-                <option key={can.value} value={can.value}>
-                  {can.label}
+                <option key={can.value || can.canal} value={can.value || can.canal}>
+                  {can.label || can.titulo}
                 </option>
               ))}
             </select>
@@ -199,8 +203,8 @@ export function EntornoConfig() {
             >
               <option value="Todas">Todas</option>
               {series.map(ser => (
-                <option key={ser.value} value={ser.value}>
-                  {ser.label}
+                <option key={ser.value || ser.serie} value={ser.value || ser.serie}>
+                  {ser.label || ser.titulo}
                 </option>
               ))}
             </select>
