@@ -22,7 +22,7 @@ export function FamiliasView() {
     // Validación más tolerante
     const empresa = Number(entorno.empresa);
     const ejercicio = Number(entorno.ejercicio);
-    const canal = String(entorno.canal || '').trim();
+    const canal = Number(entorno.canal);
 
     if (!empresa || !ejercicio || !canal) {
       setError('⚠️ Configure Empresa, Ejercicio y Canal en el panel superior y guarde el entorno.');

@@ -53,15 +53,37 @@ interface EntornoContextType {
 
 const EntornoContext = createContext<EntornoContextType | undefined>(undefined);
 
-export function EntornoProvider({ children }: { children: ReactNode }) {
-  const [entorno, setEntornoState] = useState<EntornoData>({
+// 🔹 Función para inicializar estado desde localStorage
+const initializeEntorno = (): EntornoData => {
+  const guardado = localStorage.getItem('entorno');
+  if (guardado) {
+    try {
+      const parsed = JSON.parse(guardado);
+      console.log('✅ Entorno restaurado de localStorage:', parsed);
+      return {
+        empresa: parsed.empresa ?? null,
+        ejercicio: parsed.ejercicio ?? null,
+        canal: parsed.canal ?? null,
+        serie: parsed.serie ?? '',
+        fechaTrab: parsed.fechaTrab || new Date().toISOString().split('T')[0],
+        usuario: parsed.usuario ?? null,
+      };
+    } catch (error) {
+      console.error('❌ Error parseando localStorage:', error);
+    }
+  }
+  return {
     empresa: null,
     ejercicio: null,
     canal: null,
     serie: '',
     fechaTrab: new Date().toISOString().split('T')[0],
     usuario: null,
-  });
+  };
+};
+
+export function EntornoProvider({ children }: { children: ReactNode }) {
+  const [entorno, setEntornoState] = useState<EntornoData>(initializeEntorno());
 
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [ejercicios, setEjercicios] = useState<Ejercicio[]>([]);
@@ -76,11 +98,8 @@ export function EntornoProvider({ children }: { children: ReactNode }) {
   const setEntorno = useCallback((data: Partial<EntornoData>) => {
     setEntornoState(prev => {
       const nuevo = { ...prev, ...data };
-      // Solo guardar si hay cambios reales
-      const guardado = localStorage.getItem('entorno');
-      if (guardado !== JSON.stringify(nuevo)) {
-        localStorage.setItem('entorno', JSON.stringify(nuevo));
-      }
+      console.log('💾 Guardando entorno en localStorage:', nuevo);
+      localStorage.setItem('entorno', JSON.stringify(nuevo));
       return nuevo;
     });
   }, []);
@@ -92,15 +111,6 @@ export function EntornoProvider({ children }: { children: ReactNode }) {
       const data = await res.json();
       console.log('✅ Empresas cargadas:', data);
       setEmpresas(data);
-
-      // Restaurar del localStorage solo la primera vez
-      const guardado = localStorage.getItem('entorno');
-      if (guardado && !entorno.empresa) {
-        const parsed = JSON.parse(guardado);
-        if (parsed.empresa && data.find((e: Empresa) => e.empresa === parsed.empresa)) {
-          setEntornoState(prev => ({ ...prev, empresa: parsed.empresa }));
-        }
-      }
     } catch (error) {
       console.error('❌ Error cargando empresas:', error);
     } finally {

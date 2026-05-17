@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
 
     empresa = Number(empresa) || 1;
     ejercicio = Number(ejercicio) || 2026;
-    canal = String(canal || '').trim();
+    canal = Number(canal) || 0;
 
     console.log(`🔧 Consultando -> Empresa: ${empresa}, Ejercicio: ${ejercicio}, Canal: "${canal}"`);
 
