@@ -5,9 +5,9 @@ import firebird from 'node-firebird';
 const options: firebird.Options = {
   host: process.env.FIREBIRD_HOST || 'localhost',
   port: parseInt(process.env.FIREBIRD_PORT || '3050'),
-  database: process.env.FIREBIRD_DATABASE || "D:\\DELFOS\\Virtual\\datos\\LONPER.FDB", // ← CAMBIA ESTO
+  database: process.env.FIREBIRD_DATABASE || "D:\\DELFOS\\Virtual\\datos\\LONPER.FDB", 
   user: process.env.FIREBIRD_USER || 'SYSDBA',
-  password: process.env.FIREBIRD_PASSWORD || 'masterkey', // ← CAMBIA ESTO
+  password: process.env.FIREBIRD_PASSWORD || 'masterkey', 
   lowercase_keys: true,
 };
 
