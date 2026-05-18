@@ -1,20 +1,33 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# MaxFactu React
 
-# Run and deploy your AI Studio app
+Migración del ERP MaxFactu a una interfaz full-stack con React, Vite, Express y Firebird.
 
-This contains everything you need to run your app locally.
+## Requisitos
 
-View your app in AI Studio: https://ai.studio/apps/c228fb2b-864c-46b1-85f5-39cc9ac08fad
+- Node.js
+- Servidor Firebird accesible
+- Base de datos Firebird configurada por variables de entorno
 
-## Run Locally
+## Configuración
 
-**Prerequisites:**  Node.js
+1. Instala dependencias:
+   ```bash
+   npm install
+   ```
+2. Copia `.env.example` a `.env.local` o `.env`.
+3. Configura las variables `FIREBIRD_*`.
 
+## Desarrollo
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run dev
+```
+
+La aplicación arranca en `http://localhost:3000` salvo que definas otro `PORT`.
+
+## Producción
+
+```bash
+npm run build
+npm start
+```

@@ -1,7 +1,7 @@
-// src/components/FamiliasView.tsx
-import { useState, useEffect } from 'react';
-import { useEntorno } from '../context/EntornoContext';
-import { Plus, Edit, Search, AlertCircle, RefreshCw } from 'lucide-react';
+import { useCallback, useEffect, useState } from "react";
+import { AlertCircle, Edit, Plus, RefreshCw, Search } from "lucide-react";
+
+import { useEntorno } from "../context/EntornoContext";
 
 interface Familia {
   familia: string;
@@ -16,16 +16,15 @@ export function FamiliasView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const cargarFamilias = async () => {
-    console.log('🔍 Entorno actual:', entorno);
+  const cargarFamilias = useCallback(async () => {
+    console.log("Entorno actual:", entorno);
 
-    // Validación más tolerante
     const empresa = Number(entorno.empresa);
     const ejercicio = Number(entorno.ejercicio);
-    const canal = Number(entorno.canal);
+    const canal = entorno.canal === null ? null : Number(entorno.canal);
 
-    if (!empresa || !ejercicio || !canal) {
-      setError('⚠️ Configure Empresa, Ejercicio y Canal en el panel superior y guarde el entorno.');
+    if (!empresa || !ejercicio || canal === null || Number.isNaN(canal)) {
+      setError("Configure Empresa, Ejercicio y Canal en el panel superior y guarde el entorno.");
       setFamilias([]);
       return;
     }
@@ -35,12 +34,12 @@ export function FamiliasView() {
 
     try {
       const payload = { empresa, ejercicio, canal };
-      console.log('📤 Enviando payload:', payload);
+      console.log("Enviando payload:", payload);
 
-      const response = await fetch('/api/familias', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      const response = await fetch("/api/familias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -49,30 +48,30 @@ export function FamiliasView() {
       }
 
       const data = await response.json();
-      console.log(`✅ Recibidas ${data.length} familias`);
+      console.log(`Recibidas ${data.length} familias`);
 
       setFamilias(data || []);
-    } catch (err: any) {
-      console.error('❌ Error:', err);
-      setError(err.message || 'Error al cargar familias');
+    } catch (err) {
+      console.error("Error cargando familias:", err);
+      setError(err instanceof Error ? err.message : "Error al cargar familias");
       setFamilias([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [entorno]);
 
   useEffect(() => {
     cargarFamilias();
-  }, [entorno.empresa, entorno.ejercicio, entorno.canal]);
+  }, [cargarFamilias]);
 
   useEffect(() => {
     const handle = () => {
-      console.log('🔔 Evento entornoGuardado recibido');
+      console.log("Evento entornoGuardado recibido");
       cargarFamilias();
     };
-    window.addEventListener('entornoGuardado', handle);
-    return () => window.removeEventListener('entornoGuardado', handle);
-  }, []);
+    window.addEventListener("entornoGuardado", handle);
+    return () => window.removeEventListener("entornoGuardado", handle);
+  }, [cargarFamilias]);
 
   return (
     <div className="p-6 space-y-4 bg-slate-50 min-h-screen text-slate-800">
@@ -80,16 +79,16 @@ export function FamiliasView() {
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Familias de Artículos</h2>
           <p className="text-xs text-slate-500 mt-1">
-            Entorno activo: 
+            Entorno activo:
             <span className="font-mono font-bold text-blue-600 ml-1">
-              Empresa {entorno.empresa} | Ejercicio {entorno.ejercicio} | Canal {entorno.canal || '—'}
+              Empresa {entorno.empresa} | Ejercicio {entorno.ejercicio} | Canal {entorno.canal ?? "-"}
             </span>
           </p>
         </div>
 
         <div className="flex gap-2">
           <button onClick={cargarFamilias} disabled={loading} className="flex items-center gap-2 px-4 py-2 bg-white border rounded-lg text-sm hover:bg-slate-50">
-            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             Recargar
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
@@ -116,7 +115,7 @@ export function FamiliasView() {
           <Search className="mx-auto text-slate-300 mb-4" size={48} />
           <h4 className="text-slate-700 font-semibold">No se encontraron familias</h4>
           <p className="text-slate-500 mt-2">
-            Empresa {entorno.empresa} - Ejercicio {entorno.ejercicio} - Canal {entorno.canal || '—'}
+            Empresa {entorno.empresa} - Ejercicio {entorno.ejercicio} - Canal {entorno.canal ?? "-"}
           </p>
         </div>
       ) : (
@@ -133,15 +132,17 @@ export function FamiliasView() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {familias.map((fam, i) => (
-                  <tr key={i} className="hover:bg-slate-50">
+                {familias.map((fam, index) => (
+                  <tr key={`${fam.familia}-${index}`} className="hover:bg-slate-50">
                     <td className="py-3 px-4 font-mono font-bold">{fam.familia}</td>
                     <td className="py-3 px-4">{fam.titulo}</td>
-                    <td className="py-3 px-4 text-center">{fam.tipo_iva || '-'}</td>
+                    <td className="py-3 px-4 text-center">{fam.tipo_iva || "-"}</td>
                     <td className="py-3 px-4 text-center">
-                      {fam.permite_negativo === 1 ? 
-                        <span className="bg-green-100 text-green-700 px-3 py-0.5 rounded text-xs">Sí</span> : 
-                        <span className="bg-slate-100 text-slate-600 px-3 py-0.5 rounded text-xs">No</span>}
+                      {fam.permite_negativo === 1 ? (
+                        <span className="bg-green-100 text-green-700 px-3 py-0.5 rounded text-xs">Sí</span>
+                      ) : (
+                        <span className="bg-slate-100 text-slate-600 px-3 py-0.5 rounded text-xs">No</span>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <Edit size={16} className="inline text-blue-600" />
@@ -151,9 +152,7 @@ export function FamiliasView() {
               </tbody>
             </table>
           </div>
-          <div className="bg-slate-50 p-3 text-right text-sm text-slate-600">
-            {familias.length} familias encontradas
-          </div>
+          <div className="bg-slate-50 p-3 text-right text-sm text-slate-600">{familias.length} familias encontradas</div>
         </div>
       )}
     </div>

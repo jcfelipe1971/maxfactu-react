@@ -1,5 +1,5 @@
 declare module "node-firebird" {
-  interface FirebirdConfig {
+  export interface Options {
     host?: string;
     port?: number;
     database: string;
@@ -10,25 +10,24 @@ declare module "node-firebird" {
     pageSize?: number;
   }
 
-  interface FirebirdDatabase {
+  export interface Database {
     query(
       sql: string,
-      params?: any[],
-      callback?: (err: Error | null, result: any[]) => void
+      params?: unknown[],
+      callback?: (err: Error | null, result: unknown[]) => void,
     ): void;
     exec(
       sql: string,
-      params?: any[],
-      callback?: (err: Error | null, result: any) => void
+      params?: unknown[],
+      callback?: (err: Error | null, result: unknown) => void,
     ): void;
     detach(): void;
     commit(callback?: (err: Error | null) => void): void;
   }
 
-  function attach(
-    config: FirebirdConfig,
-    callback: (err: Error | null, db?: FirebirdDatabase) => void
-  ): void;
+  const firebird: {
+    attach(config: Options, callback: (err: Error | null, db?: Database) => void): void;
+  };
 
-  export { attach };
+  export default firebird;
 }

@@ -1,15 +1,7 @@
-import React from "react";
-import { 
-  Package, 
-  Users, 
-  ShoppingCart, 
-  CreditCard, 
-  ShieldCheck, 
-  ChevronDown, 
-  ChevronRight,
-  LayoutDashboard
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
+import { ChevronDown, ChevronRight, CreditCard, Package, ShieldCheck, ShoppingCart, Users } from "lucide-react";
+import type { ReactNode } from "react";
+
 import { cn } from "@/src/lib/utils";
 import { MenuCategory } from "@/src/types";
 
@@ -20,7 +12,11 @@ interface SidebarProps {
   onItemClick: (item: string) => void;
 }
 
-const MENU_STRUCTURE = [
+const MENU_STRUCTURE: Array<{
+  id: MenuCategory;
+  icon: ReactNode;
+  items: string[];
+}> = [
   {
     id: "Almacenes",
     icon: <Package className="w-5 h-5" />,
@@ -46,7 +42,7 @@ const MENU_STRUCTURE = [
     icon: <ShieldCheck className="w-5 h-5" />,
     items: ["Configuración", "Registros"],
   },
-] as const;
+];
 
 export function Sidebar({ activeCategory, onCategoryClick, activeItem, onItemClick }: SidebarProps) {
   return (
@@ -67,16 +63,11 @@ export function Sidebar({ activeCategory, onCategoryClick, activeItem, onItemCli
                 onClick={() => onCategoryClick(section.id)}
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-md transition-all duration-200",
-                  activeCategory === section.id 
-                    ? "bg-blue-100 text-blue-700 shadow-sm" 
-                    : "text-slate-600 hover:bg-slate-200"
+                  activeCategory === section.id ? "bg-blue-100 text-blue-700 shadow-sm" : "text-slate-600 hover:bg-slate-200",
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "transition-colors",
-                    activeCategory === section.id ? "text-blue-700" : "text-slate-400"
-                  )}>
+                  <span className={cn("transition-colors", activeCategory === section.id ? "text-blue-700" : "text-slate-400")}>
                     {section.icon}
                   </span>
                   <span className="text-sm font-semibold">{section.id}</span>
@@ -102,9 +93,7 @@ export function Sidebar({ activeCategory, onCategoryClick, activeItem, onItemCli
                         onClick={() => onItemClick(item)}
                         className={cn(
                           "w-full text-left pl-11 pr-4 py-2 text-xs transition-colors rounded-md mt-1",
-                          activeItem === item 
-                            ? "text-blue-600 font-bold bg-blue-50/50" 
-                            : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
+                          activeItem === item ? "text-blue-600 font-bold bg-blue-50/50" : "text-slate-500 hover:text-slate-800 hover:bg-white/50",
                         )}
                       >
                         {item}
@@ -118,11 +107,11 @@ export function Sidebar({ activeCategory, onCategoryClick, activeItem, onItemCli
         </div>
 
         <div className="px-6 mt-8">
-           <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
             <p className="text-xs font-semibold text-blue-800">Estado de API</p>
             <p className="mt-1 text-[11px] text-blue-600">REST Service: Conectado</p>
             <div className="mt-2 h-1 w-full rounded-full bg-blue-200 overflow-hidden">
-              <div className="h-full w-3/4 bg-blue-600"></div>
+              <div className="h-full w-3/4 bg-blue-600" />
             </div>
             <p className="mt-2 text-[10px] text-blue-400 italic font-medium">Sincronización activa</p>
           </div>
