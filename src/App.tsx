@@ -7,9 +7,14 @@ import './App.css';
 
 function App() {
   const [selectedItem, setSelectedItem] = useState('familias');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // 👈 Nuevo estado para controlar el menú
 
   const handleSelectItem = (id: string) => {
     setSelectedItem(id);
+  };
+
+  const handleToggleSidebar = () => { // 👈 Función para alternar visibilidad
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const renderContent = () => {
@@ -17,10 +22,15 @@ function App() {
       case 'familias':
         return <Familias />;
       case 'articulos':
+        return <UnderConstruction />;
       case 'tarifas':
+        return <UnderConstruction />;
       case 'tipos-calculos':
+        return <UnderConstruction />;
       case 'nueva-venta':
+        return <UnderConstruction />;
       case 'historial':
+        return <UnderConstruction />;
       case 'reportes':
         return <UnderConstruction />;
       default:
@@ -30,9 +40,16 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      {/* 👈 Pasamos la función al Header */}
+      <Header onToggleSidebar={handleToggleSidebar} />
+      
       <div className="app-content">
-        <Sidebar selectedItem={selectedItem} onSelectItem={handleSelectItem} />
+        {/* 👈 Pasamos el estado isOpen al Sidebar */}
+        <Sidebar 
+          selectedItem={selectedItem} 
+          onSelectItem={handleSelectItem} 
+          isOpen={isSidebarOpen} 
+        />
         <main className="main-content">
           {renderContent()}
         </main>

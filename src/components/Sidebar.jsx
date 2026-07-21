@@ -4,20 +4,21 @@ import {
   CSidebarNav,
   CNavItem,
   CNavGroup,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilSpeedometer, cilUser, cilFolder, cilSettings } from '@coreui/icons'
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cilSpeedometer, cilUser, cilFolder, cilSettings } from "@coreui/icons";
 
-export default function Sidebar() {
+export default function Sidebar({ visible = true }) {
   return (
     <CSidebar
-      unfoldable
-      visible
+      unfoldable={!visible}
+      visible={true}
       style={{
-        width: "220px",
+        width: visible ? "220px" : "0px",
         backgroundColor: "#1e1e2f",
         color: "white",
-        borderRight: "1px solid #2c2c3b"
+        borderRight: "1px solid #2c2c3b",
+        transition: "width 0.3s ease",
       }}
     >
       <CSidebarBrand
@@ -27,37 +28,35 @@ export default function Sidebar() {
           fontWeight: "bold",
           textAlign: "center",
           backgroundColor: "#151521",
-          color: "white"
+          color: "white",
+          whiteSpace: "nowrap",
         }}
       >
-        MAXFACTU
+        {visible ? "MAXFACTU" : "M"}
       </CSidebarBrand>
 
       <CSidebarNav style={{ padding: "10px" }}>
-
-        <CNavItem href="#" style={{ padding: "10px 15px" }}>
+        <CNavItem href="#" style={{ padding: "10px 15px", whiteSpace: "nowrap" }}>
           <CIcon icon={cilSpeedometer} className="me-2" />
-          Dashboard
+          {visible && "Dashboard"}
         </CNavItem>
 
-        <CNavGroup toggler="Usuarios" style={{ padding: "10px 15px" }}>
+        <CNavGroup toggler="Usuarios" style={{ padding: "10px 15px", whiteSpace: "nowrap" }}>
           <CNavItem href="#" style={{ padding: "10px 15px" }}>
             <CIcon icon={cilUser} className="me-2" />
-            Perfil
+            {visible && "Perfil"}
           </CNavItem>
-
           <CNavItem href="#" style={{ padding: "10px 15px" }}>
             <CIcon icon={cilFolder} className="me-2" />
-            Documentos
+            {visible && "Documentos"}
           </CNavItem>
         </CNavGroup>
 
-        <CNavItem href="#" style={{ padding: "10px 15px" }}>
+        <CNavItem href="#" style={{ padding: "10px 15px", whiteSpace: "nowrap" }}>
           <CIcon icon={cilSettings} className="me-2" />
-          Configuración
+          {visible && "Configuración"}
         </CNavItem>
-
       </CSidebarNav>
     </CSidebar>
-  )
+  );
 }

@@ -8,6 +8,22 @@
   height: calc(100vh - 60px);
   position: sticky;
   top: 60px;
+  
+  /* 👇 Transición suave para la animación de ocultar/mostrar */
+  transition: width 0.3s ease, opacity 0.3s ease, min-width 0.3s ease;
+  overflow: hidden;
+}
+
+/* 👇 Regla para cuando el menú está oculto */
+.sidebar.closed {
+  width: 0 !important;
+  min-width: 0 !important;
+  border-right: none !important;
+  opacity: 0;
+}
+
+.sidebar.open {
+  opacity: 1;
 }
 
 .sidebar-section-title {
@@ -17,6 +33,7 @@
   color: #94a3b8;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  white-space: nowrap; /* 👈 Evita que el texto se rompa durante la animación */
 }
 
 .sidebar-nav {
@@ -27,6 +44,8 @@
 
 .menu-list {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .menu-item {
@@ -48,6 +67,7 @@
   border-radius: 8px;
   transition: all 0.2s ease;
   text-align: left;
+  white-space: nowrap; /* 👈 Evita que el texto se rompa durante la animación */
 }
 
 .menu-button:hover {
@@ -64,6 +84,7 @@
   display: flex;
   align-items: center;
   color: inherit;
+  flex-shrink: 0; /* 👈 Evita que el ícono se aplaste */
 }
 
 .menu-label {
@@ -73,6 +94,7 @@
 .menu-arrow {
   transition: transform 0.25s ease;
   color: #94a3b8;
+  flex-shrink: 0;
 }
 
 .menu-arrow.open {
@@ -86,6 +108,7 @@
   overflow: hidden;
   transition: max-height 0.3s ease;
   padding-left: 20px;
+  margin: 0;
 }
 
 .submenu.open {
@@ -108,6 +131,7 @@
   border-radius: 6px;
   transition: all 0.2s ease;
   text-align: left;
+  white-space: nowrap;
 }
 
 .submenu-link:hover {
@@ -129,6 +153,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
 }
 
 .footer-card-title {
@@ -152,6 +177,7 @@
   height: 8px;
   background: #22c55e;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .progress-bar {

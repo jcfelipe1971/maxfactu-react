@@ -1,10 +1,34 @@
-import { Search, Bell, Settings } from "lucide-react";
+import { Search, Bell, Settings, Menu } from "lucide-react"; // 👈 Importamos el ícono Menu
 import "./Header.css";
 
-function Header() {
+// 👈 Definimos las propiedades que recibirá el componente
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+function Header({ onToggleSidebar }: HeaderProps) {
   return (
     <header className="top-header">
       <div className="header-left">
+        {/* 👈 Botón de hamburguesa para ocultar/mostrar menú */}
+        <button 
+          className="header-btn menu-toggle-btn" 
+          onClick={onToggleSidebar} 
+          title="Mostrar/Ocultar menú"
+          style={{ 
+            marginRight: '15px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'transparent',
+            border: 'none',
+            color: '#475569'
+          }}
+        >
+          <Menu size={22} />
+        </button>
+        
         <div className="logo-container">
           <div className="logo-icon">D</div>
           <span className="logo-text">MaxFactu</span>
@@ -12,32 +36,25 @@ function Header() {
       </div>
 
       <div className="header-center">
-        <h1 className="header-title">
-          ERP Gestión Comercial <span className="header-version">| v2.4.0</span>
-        </h1>
+        <div className="search-box">
+          <Search size={18} className="search-icon" />
+          <input 
+            type="text" 
+            placeholder="Buscar..." 
+            className="search-input" 
+          />
+        </div>
       </div>
 
       <div className="header-right">
-        <button className="header-btn">
-          <Settings size={16} />
-          <span>Entorno</span>
+        <button className="header-btn" title="Notificaciones">
+          <Bell size={20} />
         </button>
-
-        <div className="search-box">
-          <Search size={16} className="search-icon" />
-          <input type="text" placeholder="Buscar en el sistema..." />
-        </div>
-
-        <button className="header-btn icon-btn">
-          <Bell size={18} />
+        <button className="header-btn" title="Configuración">
+          <Settings size={20} />
         </button>
-
-        <div className="user-profile">
-          <div className="user-info">
-            <span className="user-name">Admin Sistema</span>
-            <span className="user-env">CONECTADO: API_MAIN_PROD</span>
-          </div>
-          <div className="user-avatar">AS</div>
+        <div className="user-avatar">
+          <span>U</span>
         </div>
       </div>
     </header>

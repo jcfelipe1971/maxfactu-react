@@ -19,10 +19,11 @@ interface MenuItem {
   children: SubMenuItem[];
 }
 
-// Props del componente
+// Props del componente (👈 Añadimos isOpen)
 interface SidebarProps {
   selectedItem: string;
   onSelectItem: (id: string) => void;
+  isOpen: boolean;
 }
 
 // Datos del menú
@@ -50,7 +51,7 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-function Sidebar({ selectedItem, onSelectItem }: SidebarProps) {
+function Sidebar({ selectedItem, onSelectItem, isOpen }: SidebarProps) {
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     almacenes: true, // Abierto por defecto
   });
@@ -72,70 +73,57 @@ function Sidebar({ selectedItem, onSelectItem }: SidebarProps) {
   };
 
   return (
-    <aside className="sidebar">
+    // 👈 Aplicamos la clase 'open' o 'closed' condicionalmente
+    <aside className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
       <div className="sidebar-section-title">MENÚ PRINCIPAL</div>
 
       <nav className="sidebar-nav">
         <ul className="menu-list">
-          {menuItems.map((item) => {
-            const isOpen = openMenus[item.id] || false;
-            const hasChildren = item.children.length > 0;
-            const isParentSelected = selectedItem === item.id;
-            const isChildSelected = item.children.some(
-              (child) => child.id === selectedItem
-            );
-
-            return (
-              <li key={item.id} className="menu-item">
-                <button
-                  className={`menu-button ${
-                    isParentSelected || isChildSelected ? 'active' : ''
-                  }`}
-                  onClick={() => handleItemClick(item.id, hasChildren)}
-                >
-                  <span className="menu-icon">{item.icon}</span>
-                  <span className="menu-label">{item.label}</span>
-                  {hasChildren && (
-                    <ChevronDown
-                      size={16}
-                      className={`menu-arrow ${isOpen ? 'open' : ''}`}
-                    />
-                  )}
-                </button>
-
-                {hasChildren && (
-                  <ul className={`submenu ${isOpen ? 'open' : ''}`}>
-                    {item.children.map((child) => (
-                      <li key={child.id} className="submenu-item">
-                        <button
-                          className={`submenu-link ${
-                            selectedItem === child.id ? 'active' : ''
-                          }`}
-                          onClick={() => handleSubItemClick(child.id)}
-                        >
-                          {child.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+          {menuItems.map((item) => (
+            <li key={item.id} className="menu-item">
+              <button
+                className={`menu-button ${selectedItem === item.id ? 'active' : ''}`}
+                onClick={() => handleItemClick(item.id, item.children.length > 0)}
+              >
+                <span className="menu-icon">{item.icon}</span>
+                <span className="menu-label">{item.label}</span>
+                {item.children.length > 0 && (
+                  <ChevronDown 
+                    size={16} 
+                    className={`menu-arrow ${openMenus[item.id] ? 'open' : ''}`} 
+                  />
                 )}
-              </li>
-            );
-          })}
+              </button>
+
+              {item.children.length > 0 && (
+                <ul className={`submenu ${openMenus[item.id] ? 'open' : ''}`}>
+                  {item.children.map((subItem) => (
+                    <li key={subItem.id} className="submenu-item">
+                      <button
+                        className={`submenu-link ${selectedItem === subItem.id ? 'active' : ''}`}
+                        onClick={() => handleSubItemClick(subItem.id)}
+                      >
+                        {subItem.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
         </ul>
       </nav>
 
-      {/* Footer del sidebar */}
       <div className="sidebar-footer-card">
-        <div className="footer-card-title">Estado de API</div>
+        <div className="footer-card-title">Estado del Sistema</div>
         <div className="footer-card-status">
           <span className="status-dot"></span>
-          REST Service: Conectado
+          Operativo
         </div>
         <div className="progress-bar">
           <div className="progress-fill"></div>
         </div>
-        <div className="footer-card-sub">Sincronización activa</div>
+        <div className="footer-card-sub">v1.0.0 - MaxFactu React</div>
       </div>
     </aside>
   );
