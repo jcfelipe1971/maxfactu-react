@@ -8,17 +8,32 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #f5f7fa;
   color: #1e293b;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.app-layout {
+/* ====================== LAYOUT ====================== */
+.app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+}
+
+.app-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 .main-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f8fafc;
+}
+
+/* Opcional: mejorar el aspecto */
+.main-content h1, .main-content h2 {
+  margin-bottom: 16px;
+  color: #1e293b;
 }
