@@ -1,12 +1,12 @@
-import { useState } from "react";
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import UnderConstruction from "./views/UnderConstruction/UnderConstruction";
-import Familias from "./views/Familias/Familias";
-import "./App.css";
+import { useState } from 'react';
+import Header from './components/Header/Header';
+import Sidebar from './components/Sidebar/Sidebar';
+import UnderConstruction from './views/UnderConstruction/UnderConstruction';
+import Familias from './views/Familias/Familias';
+import './App.css';
 
 function App() {
-  const [selectedItem, setSelectedItem] = useState<string>("familias");
+  const [selectedItem, setSelectedItem] = useState<string>('familias');
 
   const handleSelectItem = (id: string) => {
     setSelectedItem(id);
@@ -15,19 +15,19 @@ function App() {
   // Renderizar la vista según el item seleccionado
   const renderContent = () => {
     switch (selectedItem) {
-      case "familias":
+      case 'familias':
         return <Familias />;
-      case "articulos":
+      case 'articulos':
         return <UnderConstruction moduleName="Artículos (Almacenes)" />;
-      case "tarifas":
+      case 'tarifas':
         return <UnderConstruction moduleName="Tarifas" />;
-      case "tipos-calculos":
+      case 'tipos-calculos':
         return <UnderConstruction moduleName="Tipos de cálculos" />;
-      case "nueva-venta":
+      case 'nueva-venta':
         return <UnderConstruction moduleName="Nueva venta" />;
-      case "historial":
+      case 'historial':
         return <UnderConstruction moduleName="Historial de ventas" />;
-      case "reportes":
+      case 'reportes':
         return <UnderConstruction moduleName="Reportes" />;
       default:
         return <UnderConstruction moduleName={selectedItem} />;
@@ -38,7 +38,9 @@ function App() {
     <div className="app-layout">
       <Header />
       <Sidebar selectedItem={selectedItem} onSelectItem={handleSelectItem} />
-      <main className="main-content">{renderContent()}</main>
+      <main className="main-content">
+        {renderContent()}
+      </main>
     </div>
   );
 }
