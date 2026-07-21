@@ -1,0 +1,242 @@
+.familias-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+  background: #f5f7fa;
+}
+
+/* Toolbar */
+.familias-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-toolbar:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.btn-toolbar.btn-danger {
+  color: #dc2626;
+}
+
+.btn-toolbar.btn-danger:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.btn-toolbar.btn-success {
+  color: #16a34a;
+}
+
+.btn-toolbar.btn-success:hover {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.btn-icon {
+  font-size: 1rem;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.filter-select {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  color: #1e293b;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:focus {
+  border-color: #2563eb;
+  background: #fff;
+}
+
+/* Tabs */
+.familias-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.tab-button {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #2563eb;
+}
+
+.tab-button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+/* Content */
+.familias-content {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
+
+/* Table */
+.table-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.familias-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.familias-table th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.familias-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.familias-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.col-id {
+  width: 80px;
+}
+
+.col-descripcion {
+  width: 40%;
+}
+
+.col-iva {
+  width: 250px;
+}
+
+.col-negativo {
+  width: 200px;
+  text-align: center;
+}
+
+/* IVA Select */
+.iva-select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  color: #1e293b;
+  cursor: pointer;
+  outline: none;
+}
+
+.iva-select:focus {
+  border-color: #2563eb;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Checkbox */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.checkbox-label.si {
+  color: #16a34a;
+  background: #f0fdf4;
+}
+
+.checkbox-label.no {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+/* Ficha */
+.ficha-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}

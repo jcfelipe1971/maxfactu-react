@@ -1,0 +1,36 @@
+.construction-view {
+  text-align: center;
+  color: #e2e8f0;
+  max-width: 480px;
+  padding: 40px;
+}
+
+.construction-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+}
+
+.construction-view h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.construction-view p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.construction-view strong {
+  color: #e2e8f0;
+}
