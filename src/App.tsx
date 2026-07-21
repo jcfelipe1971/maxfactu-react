@@ -6,7 +6,7 @@ import Familias from './views/Familias/Familias';
 import './App.css';
 
 function App() {
-  const [selectedItem, setSelectedItem] = useState<string>('familias');
+  const [selectedItem, setSelectedItem] = useState('familias');
 
   const handleSelectItem = (id: string) => {
     setSelectedItem(id);
