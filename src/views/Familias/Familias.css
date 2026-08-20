@@ -124,7 +124,7 @@
 /* Content */
 .familias-content {
   flex: 1;
-  padding: 24px;
+  padding: 2px;
   overflow: auto;
 }
 
