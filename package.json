@@ -52,6 +52,6 @@
   "homepage": "https://github.com/jcfelipe1971/maxfactu-react#readme",
   "scripts": {
     "test:db": "ts-node src/test-db.ts",
-    "dev": "ts-node-dev --transpile-only --esm src/server.ts"
+    "dev": "ts-node-dev --transpile-only --esm server.ts"
   }
 }
